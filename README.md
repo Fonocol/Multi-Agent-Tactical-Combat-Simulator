@@ -85,6 +85,10 @@ http://localhost:8000
 
 Tu verras la simulation animée dans le canvas `simCanvas`
 
+## Aperçu de la simulation
+
+![Simulation combat](/viewer/assets/view.png)
+
 ## 🤝 Contribution
 
 Les PR sont les bienvenues ! L’objectif est de créer une plateforme flexible pour tester des idées en **IA distribuée**, **stratégies de combat**, et **apprentissage multi-agent**.
