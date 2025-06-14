@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RL Shooter Viewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h2>RL Shooter Viewer</h2>
+
+    <div id="legend">
+        <span style="color:#00ffcc;">● Agent</span> |
+        <span style="color:#00ff00;">● Target</span> |
+        <span style="color:#ff3300;">● Danger</span> |
+        <span style="color:#ffff00;">● Energy</span> |
+        <span style="color:#ff00ff;">● Enemy</span> |
+        <span style="color:#aa00ff;">● Enemy Turret</span> |
+        <span style="color:#ff0088;">● Kamikaze</span> |
+        <span style="color:#ff5555;">● Projectile</span> |
+        <span style="color:#ff9900;">● Mine</span> |
+        <span style="color:#ffaa00;">● Explosion</span>
+    </div>
+
+    <canvas id="simCanvas" width="500" height="500"></canvas>
+
+    <div class="controls">
+        <button onclick="prevFrame()">⏮️ Précédent</button>
+        <button onclick="togglePlay()">⏯️ Play/Pause</button>
+        <button onclick="nextFrame()">⏭️ Suivant</button>
+    </div>
+
+    <script src="viewer.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+body {
+    background-color: #000;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+canvas {
+    border: 1px solid #ccc;
+    background-color: #111;
+    display: block;
+    margin: 20px auto;
+    width: 90vw;
+    height: 90vw;
+    max-width: 500px;
+    max-height: 500px;
+}
+
+#legend {
+    margin: 10px;
+    font-size: 14px;
+}
+
+button {
+    margin: 5px;
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+.controls {
+    margin-top: 10px;
+}
