@@ -61,7 +61,7 @@ class Environment:
             visible = self.vision.get_visible(agent, self.objects)#on peu ajouter autre infos d'observation comme les echange de message
             action = agent.decide_action(visible)
             agent.perform_action(action, self)
-            visible = self.objects
+            #visible = self.objects
            
 
             step_info.append({
@@ -80,8 +80,11 @@ class Environment:
         for _ in range(steps):
             self.step()
 
-    def export(self, path="data/output.json"):
+    def export(self, path="data/output.json"): 
         with open(path, "w") as f:
+            json.dump(self.history, f, indent=2)
+            
+        with open('data/output.json', "w") as f:
             json.dump(self.history, f, indent=2)
 
 

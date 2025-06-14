@@ -83,10 +83,10 @@ def spawn_objects():
 def spawn_agent():
     return [
         ScoutAgent(10, 10),       
-        SniperAgent(15, 15),      
+        SniperAgent(90, 90),      
         GuardAgent(12, 18, guard_x=12, guard_y=18),  
-        KamikazeAgent(20, 10),    
-        SupportAgent(8, 12),      
-        HeavyAgent(25, 15)        
+        KamikazeAgent(80, 20),    
+        SupportAgent(8, 80),      
+        HeavyAgent(25, 60)        
     ]
 

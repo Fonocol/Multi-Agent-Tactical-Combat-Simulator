@@ -49,6 +49,42 @@ Une interface JS simple permet de **jouer les frames** du fichier `output.json` 
 
 ---
 
+## ⚙️ Installation et Lancement
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/Fonocol/Multi-Agent-Tactical-Combat-Simulator.git
+cd Multi-Agent-Tactical-Combat-Simulator
+```
+
+### 2.Exécuter la simulation (Python)
+
+Assure-toi d’avoir Python 3.8+ :
+
+```
+python main.py
+```
+
+Cela génère un fichier data/output.json
+
+### 3. Visualiser la simulation (HTML / JS)
+
+Ouvre un terminal et lance un serveur local dans le dossier `viewer`
+
+```bash
+cd viewer
+python -m http.server 8000
+```
+
+Ensuite, ouvre ton navigateur à l’adresse :
+
+```bash
+http://localhost:8000
+```
+
+Tu verras la simulation animée dans le canvas `simCanvas`
+
 ## 🤝 Contribution
 
 Les PR sont les bienvenues ! L’objectif est de créer une plateforme flexible pour tester des idées en **IA distribuée**, **stratégies de combat**, et **apprentissage multi-agent**.
@@ -58,3 +94,7 @@ Les PR sont les bienvenues ! L’objectif est de créer une plateforme flexible 
 ## 📜 Licence
 
 Ce projet est open-source et sous licence MIT.
+
+```
+
+```
