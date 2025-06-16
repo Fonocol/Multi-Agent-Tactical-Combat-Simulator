@@ -12,8 +12,8 @@ import random
 
 
 class ScoutAgent(Agent):
-    def __init__(self, x, y):
-        super().__init__(x, y, radius=0.8, range_radius=50, fov_deg=160)
+    def __init__(self, x, y,radius=0.8):
+        super().__init__(x, y, radius=radius, range_radius=50, fov_deg=160)
         self.speed = 2.0
 
     def decide_action(self, observation=None):
@@ -27,8 +27,8 @@ class ScoutAgent(Agent):
 
 
 class SniperAgent(Agent):
-    def __init__(self, x, y):
-        super().__init__(x, y, radius=1.0, range_radius=60, fov_deg=90)
+    def __init__(self, x, y,radius=0.8):
+        super().__init__(x, y, radius=radius, range_radius=60, fov_deg=90)
         self.attack_range = 10.0
         self.attack_power = 40
 
@@ -45,8 +45,8 @@ class SniperAgent(Agent):
 
 
 class GuardAgent(Agent):
-    def __init__(self, x, y, guard_x=None, guard_y=None):
-        super().__init__(x, y, radius=1.2, range_radius=35, fov_deg=120)
+    def __init__(self, x, y,radius=0.8, guard_x=None, guard_y=None):
+        super().__init__(x, y, radius=radius, range_radius=35, fov_deg=120)
         self.guard_position = (guard_x or x, guard_y or y)
         self.patrol_radius = 25.0
 
@@ -69,8 +69,8 @@ class GuardAgent(Agent):
 
 
 class KamikazeAgent(Agent):
-    def __init__(self, x, y):
-        super().__init__(x, y, radius=1.0, range_radius=25, fov_deg=100)
+    def __init__(self, x, y,radius=0.8):
+        super().__init__(x, y, radius=radius, range_radius=25, fov_deg=100)
         self.speed = 2.5
         self.explosion_range = 2.0
         self.explosion_damage = 100
@@ -104,8 +104,8 @@ class KamikazeAgent(Agent):
 
 
 class SupportAgent(Agent):
-    def __init__(self, x, y):
-        super().__init__(x, y, radius=1.0, range_radius=35, fov_deg=120)
+    def __init__(self, x, y,radius=0.8):
+        super().__init__(x, y, radius=radius, range_radius=35, fov_deg=120)
         self.heal_range = 5.0
         self.heal_amount = 10
 
@@ -129,8 +129,8 @@ class SupportAgent(Agent):
 
 
 class HeavyAgent(Agent):
-    def __init__(self, x, y):
-        super().__init__(x, y, radius=1.5, range_radius=25, fov_deg=90)
+    def __init__(self, x, y,radius=0.8):
+        super().__init__(x, y, radius=radius, range_radius=25, fov_deg=90)
         self.health = 200
         self.speed = 0.6
 

@@ -1,20 +1,23 @@
+from core.entity_types import EntityType, Role
 from .enemyBase import EnemyBase
 from core.utils import distance_to
 import math
 import random
 
 class EnemyDrone(EnemyBase):  
-    def __init__(self, x, y, patrol_radius=10, radius=3.0, patrol_type="circle"):
+    def __init__(self, x, y, patrol_radius=10, radius=3.0,fire_range = 10.0 ,patrol_type="circle",role='any'):
         super().__init__(x, y, radius=radius, health=100, speed=0.1, etype="enemy_drone")
         self.patrol_radius = patrol_radius
         self.center = (x, y)
         self.angle = 0.0
         self.attack_range = 15.0
-        self.fire_range = 10.0
+        self.fire_range = fire_range
         self.target = None
         self.patrol_type = patrol_type.lower()
         self.random_direction = (random.uniform(-1, 1), random.uniform(-1, 1))
         self.random_timer = 0
+        
+        self.role = role.lower()
 
     def update(self, env):
         self.find_target(env)
@@ -48,7 +51,12 @@ class EnemyDrone(EnemyBase):
             self.y += dy * self.speed * 2
         else:
             # Attack
-            env.spawn_projectile(self.x, self.y, dx, dy, self)
+            if self.role == Role.JammerComunication:
+                env.spawn_jammer_communication(self.x, self.y, self)
+            else:   
+                env.spawn_projectile(self.x, self.y, dx, dy, self)
+    
+    
             
     def patrol(self):
         self.angle += self.speed

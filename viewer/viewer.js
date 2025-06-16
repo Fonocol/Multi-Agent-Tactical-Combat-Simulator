@@ -45,7 +45,7 @@ function drawGrid(spacing = 10) {
 
 function drawEntity(entity, color) {
     ctx.beginPath();
-    ctx.arc(entity.x * scale, entity.y * scale, entity.radius, 0, 2 * Math.PI);
+    ctx.arc(entity.x * scale, entity.y * scale, (entity.radius) * scale, 0, 2 * Math.PI);
     ctx.fillStyle = color;
     ctx.fill();
 }

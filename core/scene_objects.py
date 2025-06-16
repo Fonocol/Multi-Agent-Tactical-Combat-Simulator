@@ -1,4 +1,5 @@
 from core.agents.combat_agents import GuardAgent, HeavyAgent, KamikazeAgent, ScoutAgent, SniperAgent, SupportAgent
+from core.entity_types import Role
 from .enemys.enemyKamikaze import EnemyKamikaze
 from .enemys.enemyTurret import EnemyTurret
 from .enemys.enemy_drone import EnemyDrone
@@ -9,84 +10,63 @@ from core.objects.rockWall import RockWall
 from core.objects.smoke_zone import JammerZone, SmokeZone
 
 def spawn_objects():
-    # Configuration des zones clés
-    safe_zone = (15, 15)  # Zone de départ
-    objective_south = (20, 80)  # Objectif principal
-    objective_east = (80, 20)   # Objectif secondaire
-    center = (50, 50)           # Point stratégique central
+    # Points clés avec marges des bords
+    safe_zone = (15, 15)
+    objective_south = (25, 85)  # 15 unités du bord
+    objective_east = (85, 25)   # 15 unités du bord
+    center = (50, 50)
     
     return [
-        # OBJECTIFS (positionnés asymétriquement)
-        ObjectiveItem(*objective_south, radius=3),  # Objectif principal plus visible
-        ObjectiveItem(*objective_east, radius=2.5), # Objectif secondaire
+        # OBJECTIFS
+        ObjectiveItem(*objective_south, radius=3.5),  # Taille augmentée
+        ObjectiveItem(*objective_east, radius=3.0),
         
-        # SOURCES D'ÉNERGIE (stratégiquement placées)
-        EnergySource(*safe_zone, radius=3),          # Zone de départ
-        EnergySource(85, 15, radius=2),             # Près de l'objectif Est (risqué)
-        EnergySource(25, 70, radius=2),             # Sur le chemin de l'objectif Sud
-        EnergySource(60, 40, radius=2.5),           # Point intermédiaire central
+        # ÉNERGIE - positions plus stratégiques
+        EnergySource(*safe_zone, radius=3.0),
+        EnergySource(80, 20, radius=2.5),  # Chemin vers objectif Est
+        EnergySource(20, 75, radius=2.5),  # Chemin vers objectif Sud
+        EnergySource(55, 45, radius=2.0),  # Point intermédiaire
         
-        # MINES (disposées en patterns stratégiques)
-        *[Mine(x, y, trigger_radius=5)             # Champ de mines central
-          for x in range(40, 61, 5)
-          for y in range(40, 61, 5) if (x+y) % 7 != 0], # Pattern évitable
+        # MINES - moins nombreuses mais mieux placées
+        *[Mine(x, y, trigger_radius=1.8) for x,y in [
+            (45,45), (50,50), (55,55),  # Diagonale centrale
+            (20,70), (70,20),           # Approches objectives
+            (30,30), (70,70)            # Zones alternatives
+        ]],
         
-        Mine(18, 75, trigger_radius=8),            # Piège près objectif Sud
-        Mine(75, 25, trigger_radius=6),            # Piège près objectif Est
-        Mine(30, 30, trigger_radius=4),            # Piège sur route alternative
+        # DRONES - nombre réduit mais plus efficaces
+        EnemyDrone(*center, patrol_radius=12, radius=1.8),
+        EnemyDrone(35, 65, patrol_radius=8, radius=1.6,patrol_type='lemniscate'),
+        EnemyDrone(65, 35, patrol_radius=8, radius=1.6,patrol_type='random'),
+        EnemyDrone(12, 12, patrol_radius=5, radius=1.6,patrol_type='square',role='jammer_comunication'),
         
-        # ENNEMIS MOBILES (avec rôles spécifiques)
-        # Patrouilleurs centraux
-        EnemyDrone(*center, patrol_radius=15, patrol_type='lemniscate'), # Gardien central
-        EnemyDrone(40, 40, patrol_radius=8, patrol_type="spiral"),       # Défenseur zone
+        # TOURELLES - positions clés
+        EnemyTurret(40, 60, radius=3.0, fire_range=20),  # Protège objectif Sud
+        EnemyTurret(60, 40, radius=3.0, fire_range=20),  # Protège objectif Est
         
-        # Patrouilleurs périphériques
-        EnemyDrone(20, 50, patrol_radius=12, patrol_type='ellipse'),     # Flanc Sud
-        EnemyDrone(70, 30, patrol_radius=10, patrol_type='square'),      # Flanc Est
-        
-        # Chasseurs aléatoires
-        EnemyDrone(60, 60, patrol_radius=20, patrol_type='random'),      # Imprévisible
-        EnemyDrone(30, 70, patrol_radius=5, patrol_type='random'),       # Près objectif
-        
-        # TOURELLES FIXES (points de contrôle)
-        EnemyTurret(*center, radius=3, fire_range=25),                   # Contrôle central
-        EnemyTurret(70, 30, radius=2.5),                                 # Couloir Est
-        EnemyTurret(30, 70, radius=2.5),                                 # Approche Sud
-        
-        # ENNEMIS KAMIKAZES (embuscades)
-        *[EnemyKamikaze(x, 75, radius=2.2) for x in range(15, 26, 5)],   # Ligne Sud
-        EnemyKamikaze(65, 35, radius=2.2),                               # Zone Est
-        EnemyKamikaze(45, 55, radius=2.2),                              # Centre
+        # KAMIKAZES - groupes compacts
+        *[EnemyKamikaze(20 + x, 80, radius=2.0) for x in range(0, 15, 5)],
+        *[EnemyKamikaze(80, 20 + y, radius=2.0) for y in range(0, 15, 5)],
         
         # ZONES SPÉCIALES
-        # Brouilleurs (désactivent les capacités)
-        JammerZone(55, 55, radius=5),                   # Centre stratégique
-        JammerZone(20, 60, radius=4),                   # Route Sud
-        JammerZone(70, 40, radius=4),                   # Route Est
+        JammerZone(50, 50, radius=6.0),  # Centre élargi
+        SmokeZone(40, 60, radius=7.0),   # Cache objectif Sud
+        SmokeZone(60, 40, radius=7.0),   # Cache objectif Est
         
-        # Fumée (obscurcissement visuel)
-        SmokeZone(35, 50, radius=8),                    # Cache approche Sud
-        SmokeZone(65, 35, radius=6),                   # Cache objectif Est
-        SmokeZone(45, 45, radius=10),                   # Grande zone centrale
-        
-        # OBSTACLES NATURELS
-        # Mur en L avec passage secret
-        *[RockWall(x, 30, radius=1.8) for x in range(20, 41) if x != 30],
-        *[RockWall(30, y, radius=1.8) for y in range(30, 51) if y != 40],
-        
-        # Blocs dispersés
-        *[RockWall(x, y, radius=2) 
-          for x in range(60, 76, 3) 
-          for y in range(60, 76, 3) if (x+y) % 4 == 0],
+        # OBSTACLES
+        *[RockWall(x, 40, radius=2.0) for x in range(30, 71, 10)],
+        *[RockWall(40, y, radius=2.0) for y in range(30, 71, 10)],
+        *[RockWall(x, y, radius=1.5) 
+          for x in range(70, 86, 5) 
+          for y in range(70, 86, 5) if (x + y) % 3 == 0]
     ]
 
 def spawn_agent():
     return [
-        ScoutAgent(10, 10),       
-        SniperAgent(90, 90),      
-        GuardAgent(12, 18, guard_x=12, guard_y=18),  
-        KamikazeAgent(80, 20),    
-        SupportAgent(8, 80),      
-        HeavyAgent(25, 60)        
+        ScoutAgent(12, 12, radius=1.2),       # Proche safe zone
+        SniperAgent(85, 85, radius=1.5),      # Position avancée
+        GuardAgent(15, 15, radius=1.8),       # Protection base
+        SupportAgent(20, 20, radius=1.3),     # Support arrière
+        HeavyAgent(25, 25, radius=2.2),       # Défense rapprochée
+        KamikazeAgent(80, 80, radius=1.8)     # Attaque frontale
     ]
-

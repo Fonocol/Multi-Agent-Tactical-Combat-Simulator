@@ -16,6 +16,7 @@ class Agent(Entity):
         
         self.effective_range = self.range
         self.effective_fov = self.fov
+        self.can_communicate = True
         self.inbox = []
 
     def decide_action(self, observation=None):
@@ -164,10 +165,16 @@ class Agent(Entity):
     
     
     def send_message(self):
-        """Exemple de message si un ennemi est repéré dans la vision"""
+        if not self.can_communicate:
+            return []
+
+        if self.is_jammed(self.env.objects):
+            print(f"Agent @({self.x:.1f},{self.y:.1f}) est brouillé !")
+            return []  # Communication bloquée
+    
+
         messages = []
         visible_objects = self.get_vision(self.env.objects) if hasattr(self, 'env') else []
-
         for obj in visible_objects:
             if obj.etype in ["enemy", EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE]:
                 messages.append({
@@ -175,18 +182,28 @@ class Agent(Entity):
                     "pos": (obj.x, obj.y),
                     "sender": id(self)
                 })
-        return messages 
+        return messages
 
     def receive_messages(self, messages):
-        """Stocke les messages utiles dans l'inbox"""
-        self.inbox = []
+        if not self.can_communicate or self.is_jammed(self.env.objects):
+            self.inbox = []
+            return
+        
 
-        for msg in messages:
-            if msg["sender"] == id(self):
-                continue  # ne pas recevoir ses propres messages
-            if self._distance(msg["pos"], (self.x, self.y)) <= self.range:
-                self.inbox.append(msg)
+
+        self.inbox = [msg for msg in messages
+                    if msg["sender"] != id(self) and self._distance(msg["pos"], (self.x, self.y)) <= self.range]
+
+
 
     def _distance(self, p1, p2):
         return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+    
+    def is_jammed(self, objects):
+        for obj in objects:
+            if obj.etype == EntityType.JammerComunication:
+                if self._distance((self.x, self.y), (obj.x, obj.y)) <= obj.radius:
+                    return True
+        return False
+
 

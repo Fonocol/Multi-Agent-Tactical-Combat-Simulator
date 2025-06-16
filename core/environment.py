@@ -1,5 +1,6 @@
 import json
 from core.objects.explosion import Explosion
+from core.objects.smoke_zone import  JammerCommunication
 from core.scene_objects import spawn_agent, spawn_objects
 from core.vision import Vision
 from core.objects.projectile import Projectile
@@ -26,9 +27,14 @@ class Environment:
         self.objects.append(explosion)
         
     def spawn_projectile(self, x, y, dx, dy,owner=None):
-        
         proj = Projectile(x, y, dx, dy,owner)
         self.objects.append(proj)
+        
+   
+    def spawn_jammer_communication(self, x, y, owner=None):
+        jammer = JammerCommunication(x, y,radius=6.0)
+        self.objects.append(jammer)
+
 
 
     def step(self):
@@ -56,12 +62,12 @@ class Environment:
             if not agent.alive:
                 continue
 
-
+            #
             # Perception de l'agent
             visible = self.vision.get_visible(agent, self.objects)#on peu ajouter autre infos d'observation comme les echange de message
             action = agent.decide_action(visible)
             agent.perform_action(action, self)
-            #visible = self.objects
+            visible = self.objects
            
 
             step_info.append({
@@ -75,6 +81,7 @@ class Environment:
         self.agents = [a for a in self.agents if a.alive]
 
         self.history.append(step_info)
+
 
     def run(self, steps=100):
         for _ in range(steps):

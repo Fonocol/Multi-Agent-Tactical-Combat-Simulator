@@ -11,7 +11,17 @@ class EntityType:
     ENERGY_DRONE="enemy_drone"
     ENERGY_KAMIKAZE='enemy_kamikaze'
     WALL= 'wall'
+    JammerComunication = 'jammer_comunication'
 
     @classmethod
     def all(cls):
-        return [cls.AGENT, cls.TARGET, cls.DANGER, cls.ENERGY, cls.ENEMY, cls.PROJECTILE, cls.SMOKE, cls.JAMMER]
+        return [cls.AGENT, cls.TARGET, cls.DANGER, cls.ENERGY, cls.ENEMY, cls.PROJECTILE, cls.SMOKE, 
+                cls.JAMMER, cls.ENERGY_DRONE,  cls.ENERGY_KAMIKAZE,   cls.WALL, cls.JammerComunication]
+
+
+class Role:
+    JammerComunication = 'jammer_comunication'
+
+    @classmethod
+    def all(cls):
+        return [cls.JammerComunication]
