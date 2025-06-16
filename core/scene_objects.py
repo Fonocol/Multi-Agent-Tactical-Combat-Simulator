@@ -38,7 +38,7 @@ def spawn_objects():
         EnemyDrone(*center, patrol_radius=12, radius=1.8),
         EnemyDrone(35, 65, patrol_radius=8, radius=1.6,patrol_type='lemniscate'),
         EnemyDrone(65, 35, patrol_radius=8, radius=1.6,patrol_type='random'),
-        EnemyDrone(12, 12, patrol_radius=5, radius=1.6,patrol_type='square',role='jammer_comunication'),
+        EnemyDrone(12, 12, patrol_radius=5, radius=1.6,patrol_type='square',role=Role.SMOKER),
         
         # TOURELLES - positions clés
         EnemyTurret(40, 60, radius=3.0, fire_range=20),  # Protège objectif Sud

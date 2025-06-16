@@ -1,7 +1,7 @@
 import uuid
 
 class Entity:
-    def __init__(self, x, y, radius=1.0, etype="generic"):
+    def __init__(self, x, y, radius=1.0, etype="generic",moving=True):
         self.id = str(uuid.uuid4())
         self.x = x
         self.y = y
@@ -9,6 +9,7 @@ class Entity:
         self.etype = etype
         #self.active = True
         self.alive = True  # utile pour explosion/destruction
+        self.moving = moving
 
     def to_dict(self):
         return {

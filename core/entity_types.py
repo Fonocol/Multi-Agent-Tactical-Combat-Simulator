@@ -20,8 +20,9 @@ class EntityType:
 
 
 class Role:
-    JammerComunication = 'jammer_comunication'
+    JammerComunication = 'jammer_comunication',
+    SMOKER = 'smoker'
 
     @classmethod
     def all(cls):
-        return [cls.JammerComunication]
+        return [cls.JammerComunication,cls.SMOKER]

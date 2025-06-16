@@ -1,6 +1,6 @@
 import json
 from core.objects.explosion import Explosion
-from core.objects.smoke_zone import  JammerCommunication
+from core.objects.smoke_zone import  JammerCommunication, SmokeZone
 from core.scene_objects import spawn_agent, spawn_objects
 from core.vision import Vision
 from core.objects.projectile import Projectile
@@ -34,6 +34,10 @@ class Environment:
     def spawn_jammer_communication(self, x, y, owner=None):
         jammer = JammerCommunication(x, y,radius=6.0)
         self.objects.append(jammer)
+        
+    def spawn_smoke_zone(self, x, y,moving, owner=None):
+        smoke = SmokeZone(x, y,radius=5.0,moving=moving)
+        self.objects.append(smoke)
 
 
 
