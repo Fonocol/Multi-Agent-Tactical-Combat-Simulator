@@ -52,10 +52,10 @@ class EnemyDrone(EnemyBase):
         else:
             # Attack
             if self.role == Role.JammerComunication:
-                env.spawn_jammer_communication(self.x, self.y, self)
+                env.spawn_jammer_communication(self.x, self.y,moving=True,owner=self)
             elif self.role == Role.SMOKER:
-                env.spawn_smoke_zone(self.x, self.y,moving=True, owner=None)
-                print('rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+                env.spawn_smoke_zone(self.x, self.y,moving=True, owner=self)
+                
             else:   
                 env.spawn_projectile(self.x, self.y, dx, dy, self)
     

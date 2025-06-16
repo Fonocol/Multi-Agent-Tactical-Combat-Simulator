@@ -31,8 +31,8 @@ class Environment:
         self.objects.append(proj)
         
    
-    def spawn_jammer_communication(self, x, y, owner=None):
-        jammer = JammerCommunication(x, y,radius=6.0)
+    def spawn_jammer_communication(self, x, y,moving, owner=None):
+        jammer = JammerCommunication(x, y,radius=6.0,moving=moving)
         self.objects.append(jammer)
         
     def spawn_smoke_zone(self, x, y,moving, owner=None):

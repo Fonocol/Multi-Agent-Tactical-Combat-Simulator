@@ -49,8 +49,8 @@ def spawn_objects():
         *[EnemyKamikaze(80, 20 + y, radius=2.0) for y in range(0, 15, 5)],
         
         # ZONES SPÉCIALES
-        JammerZone(50, 50, radius=6.0),  # Centre élargi
-        SmokeZone(40, 60, radius=7.0),   # Cache objectif Sud
+        JammerZone(50, 50, radius=6.0,moving=True,ttl=1000),  # Centre élargi
+        SmokeZone(40, 60, radius=7.0,moving=True),   # Cache objectif Sud
         SmokeZone(60, 40, radius=7.0),   # Cache objectif Est
         
         # OBSTACLES
