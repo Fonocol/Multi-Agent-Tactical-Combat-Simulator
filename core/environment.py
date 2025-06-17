@@ -1,4 +1,5 @@
 import json
+from core.enemys.decoy import Decoy
 from core.objects.explosion import Explosion
 from core.objects.smoke_zone import  JammerCommunication, SmokeZone
 from core.scene_objects import spawn_agent, spawn_objects
@@ -14,6 +15,8 @@ class Environment:
         self.vision = Vision()
         self.objects = self._spawn_objects()
         self.history = []
+        
+        self.time =0
 
     def _spawn_objects(self):
         return spawn_objects()
@@ -32,16 +35,24 @@ class Environment:
         
    
     def spawn_jammer_communication(self, x, y,moving, owner=None):
-        jammer = JammerCommunication(x, y,radius=6.0,moving=moving)
+        jammer = JammerCommunication(x, y,radius=6.0,moving=moving,ttl=10)
         self.objects.append(jammer)
         
     def spawn_smoke_zone(self, x, y,moving, owner=None):
-        smoke = SmokeZone(x, y,radius=5.0,moving=moving)
+        smoke = SmokeZone(x, y,radius=5.0,moving=moving,ttl=10)
         self.objects.append(smoke)
+        
+    def spawn_entity(self,child):
+        self.objects.append(child)
+        
+    def spawn_decoy(self, x, y, lifespan=20):
+        decoy = Decoy(x, y, lifespan)
+        self.objects.append(decoy)
 
 
 
     def step(self):
+        self.time +=1
         all_messages = []
         for agent in self.agents:
             agent.env = self  # Injecter le contexte s'il n'est pas déjà dedans
@@ -84,6 +95,7 @@ class Environment:
         self.objects = [o for o in self.objects if getattr(o, "alive", True)]
         self.agents = [a for a in self.agents if a.alive]
 
+        print(len(self.objects))
         self.history.append(step_info)
 
 

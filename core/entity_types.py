@@ -12,6 +12,9 @@ class EntityType:
     ENERGY_KAMIKAZE='enemy_kamikaze'
     WALL= 'wall'
     JammerComunication = 'jammer_comunication'
+    DECOY='decoy'
+    ENERGY_DRONE_ELITE='enemy_drone_elite'
+    
 
     @classmethod
     def all(cls):

@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from core.entity import Entity
 
 
@@ -12,6 +13,16 @@ class EnemyBase(Entity):
         self.health -= amount
         if self.health <= 0:
             self.alive = False
+            
+    def to_dict(self)-> Dict[str, Any]:
+        return {
+            "type": self.etype,
+            "x": self.x,
+            "y": self.y,
+            "radius": self.radius,
+            "alive": self.alive,
+            'health':self.health
+        }
 
     def update(self, env):
         raise NotImplementedError("Chaque type d'ennemi doit redéfinir update()")

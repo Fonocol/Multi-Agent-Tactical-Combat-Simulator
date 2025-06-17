@@ -1,18 +1,18 @@
-import math
-import random
+from typing import Any, Dict
+import numpy as np
 from core.entity import Entity
 from core.entity_types import EntityType
 from core.utils import is_blocked_by_wall
 
 
 class Agent(Entity):
-    def __init__(self, x, y, radius=1.0,range_radius=30,fov_deg=90):
+    def __init__(self, x:float, y:float, radius:float=1.0,range_radius:float=30,fov_deg:float=90):
         super().__init__(x, y, radius, etype="agent")
         self.energy = 100
         self.health = 100
         self.facing_angle = 0.0
         self.range = range_radius
-        self.fov = math.radians(fov_deg)
+        self.fov = np.deg2rad(fov_deg)
         
         self.effective_range = self.range
         self.effective_fov = self.fov
@@ -24,17 +24,16 @@ class Agent(Entity):
         Pour l'instant : action aléatoire.
         Plus tard : pourra utiliser observation + policy RL
         """
-        dx = random.uniform(-1, 1)
-        dy = random.uniform(-1, 1)
+        vec = np.random.uniform(-1, 1, size=2)
+        norm = np.linalg.norm(vec)
 
-        
-        if dx != 0 or dy != 0:
-            norm = math.sqrt(dx ** 2 + dy ** 2)
-            dx /= norm
-            dy /= norm
-            self.facing_angle = math.atan2(dy, dx)
+        if norm > 0:
+            vec = vec / norm
+            self.facing_angle = np.arctan2(vec[1], vec[0])
 
-        return {"type": "move", "dx": dx, "dy": dy}
+        return {"type": "move", "dx": vec[0], "dy": vec[1]}
+
+    
     
     def perform_action(self, action, env):
         """
@@ -49,7 +48,7 @@ class Agent(Entity):
 
         # D'autres types : "use_item", "scan", "defend", "wait"...
     
-    def get_orientation(self):
+    def get_orientation(self)-> Dict[str, Any]:
         return {
             'x': self.x,
             'y': self.y,
@@ -58,7 +57,7 @@ class Agent(Entity):
             'fov':self.effective_fov
         }
         
-    def to_dict(self):
+    def to_dict(self)-> Dict[str, Any]:
         return {
                 'x': self.x,
                 'y': self.y,
@@ -67,101 +66,97 @@ class Agent(Entity):
                 'energy': self.energy,
                 'range':self.range,
                 'radius':self.radius
-                }
+    }
 
     
     
     def move(self, dx, dy, env=None):
-        new_x = self.x + dx
-        new_y = self.y + dy
+        new_pos = np.array([self.x + dx, self.y + dy])
 
         if env:
             for obj in env.objects:
                 if getattr(obj, "block_movement", False):
-                    # Collision test
-                    if ((obj.x - new_x)**2 + (obj.y - new_y)**2)**0.5 <= self.radius + obj.radius+0.5:
-                        return  
-        self.x = new_x
-        self.y = new_y
-        
-        if self.x <0 or self.x>500 or self.y <0 or self.y>500:
+                    dist = np.linalg.norm([obj.x - new_pos[0], obj.y - new_pos[1]])
+                    if dist <= self.radius + obj.radius + 0.5:
+                        return
+
+        self.x, self.y = new_pos
+
+        if not (0 <= self.x <= 500 and 0 <= self.y <= 500):
             self.health = 0
             self.alive = False
 
-        
+    
         
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
             self.alive = False
             
+
     def get_vision(self, objects):
         vision = []
         self.effective_range = self.range
         self.effective_fov = self.fov
         walls = []
+        vec_self = np.array([self.x, self.y])
         
         for obj in objects:
             if not obj.alive:
                 continue
 
-            dx = obj.x - self.x
-            dy = obj.y - self.y
-            dist = math.hypot(dx, dy)
+            vec_obj = np.array([obj.x, obj.y])
+            vec = vec_obj - vec_self
+            dist = np.linalg.norm(vec)
             
             if obj.etype == EntityType.WALL:
                 walls.append(obj)
 
             if obj.etype == EntityType.SMOKE and dist <= obj.radius:
                 self.effective_range *= obj.get_vision_penalty()
-            
+
             if obj.etype == EntityType.JAMMER and dist <= obj.radius:
-                # Vision bloquée complètement
-                return [obj]
-            
-        
-        # Calcul de la vision normale
+                return [obj]  # Vision bloquée
+
+        # Deuxième passe : vision normale
         for obj in objects:
             if not obj.alive or obj == self:
                 continue
 
-            dx = obj.x - self.x
-            dy = obj.y - self.y
-            dist = math.hypot(dx, dy)
+            vec_obj = np.array([obj.x, obj.y])
+            vec = vec_obj - vec_self
+            dist = np.linalg.norm(vec)
 
             if dist > self.effective_range:
                 continue
             if is_blocked_by_wall(self, obj, walls):
-                continue  # objet caché par un mur
+                continue
 
-            direction = math.atan2(dy, dx)
+            direction = np.arctan2(vec[1], vec[0])
             delta = self._angle_diff(direction, self.facing_angle)
 
             if abs(delta) <= self.effective_fov / 2:
                 vision.append(obj)
 
         return vision
-    
+  
 
     def _angle_diff(self, a, b):
-        diff = a - b
-        while diff > math.pi:
-            diff -= 2 * math.pi
-        while diff < -math.pi:
-            diff += 2 * math.pi
+        diff = (a - b + np.pi) % (2 * np.pi) - np.pi
         return diff
-    
 
     
     def attack(self, objects, damage=20, attack_range=3.0):
+        self_pos = np.array([self.x, self.y])
         for obj in objects:
-            if obj.etype in [EntityType.ENERGY_DRONE,EntityType.ENERGY_KAMIKAZE] and obj.alive:
-                dist = math.hypot(obj.x - self.x, obj.y - self.y)
+            if obj.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE] and obj.alive:
+                dist = np.linalg.norm(self_pos - np.array([obj.x, obj.y]))
                 if dist <= attack_range:
                     obj.take_damage(damage)
                     print(f"[Agent @({self.x:.1f},{self.y:.1f})] a attaqué un ennemi @({obj.x:.1f},{obj.y:.1f})")
                     return True
         return False
+
     
     
     def send_message(self):
@@ -180,7 +175,7 @@ class Agent(Entity):
                 messages.append({
                     "type": "enemy_spotted",
                     "pos": (obj.x, obj.y),
-                    "sender": id(self)
+                    "sender": self.id
                 })
         return messages
 
@@ -192,12 +187,8 @@ class Agent(Entity):
 
 
         self.inbox = [msg for msg in messages
-                    if msg["sender"] != id(self) and self._distance(msg["pos"], (self.x, self.y)) <= self.range]
+                    if msg["sender"] != self.id and self._distance(msg["pos"], (self.x, self.y)) <= self.range]
 
-
-
-    def _distance(self, p1, p2):
-        return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
     
     def is_jammed(self, objects):
         for obj in objects:
@@ -206,4 +197,7 @@ class Agent(Entity):
                     return True
         return False
 
+
+    def _distance(self, p1, p2):
+        return np.linalg.norm(np.array(p1) - np.array(p2))
 

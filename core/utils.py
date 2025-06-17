@@ -1,47 +1,40 @@
-import math
-
+import numpy as np
 from core.entity_types import EntityType
+MAX_DRONES = 50
+MAX_DRONES_ELITE=3
 
+def distance_to(self, obj) -> float:
+    return np.linalg.norm(np.array([obj.x, obj.y]) - np.array([self.x, self.y]))
 
-
-def distance_to(a, b):
-    dx = a.x - b.x
-    dy = a.y - b.y
-    return math.sqrt(dx * dx + dy * dy)
 
 def is_blocked_by_wall(agent, target, walls):
     if target.etype == EntityType.WALL:
         return False
+
+    a = np.array([agent.x, agent.y])
+    t = np.array([target.x, target.y])
+    ab = t - a
+    mag = np.linalg.norm(ab)
+
+    if mag == 0:
+        return False
+
+    ab_dir = ab / mag  # vecteur direction normalisé
+
     for wall in walls:
-        # Distance du mur à la ligne agent–target
-        px, py = wall.x, wall.y
-        ax, ay = agent.x, agent.y
-        tx, ty = target.x, target.y
+        p = np.array([wall.x, wall.y])
+        
+        ap = p - a
+        proj_length = np.dot(ap, ab_dir)
 
-        # Projeter le mur sur le segment agent–target
-        dx, dy = tx - ax, ty - ay
-        mag = math.hypot(dx, dy)
-        if mag == 0:
-            continue
-
-        dx /= mag
-        dy /= mag
-
-        # Projection du point mur sur la ligne agent–target
-        t = ((px - ax) * dx + (py - ay) * dy)
-
-        if t < 0 or t > mag:
+        if proj_length < 0 or proj_length > mag:
             continue  # mur pas entre agent et target
 
-        # Position du point projeté
-        closest_x = ax + dx * t
-        closest_y = ay + dy * t
+        # Projection sur la ligne
+        closest_point = a + proj_length * ab_dir
+        dist_to_line = np.linalg.norm(p - closest_point)
 
-        # Distance entre le mur et la ligne
-        dist = math.hypot(px - closest_x, py - closest_y)
-
-        if dist < wall.radius:
-            return True  # Mur bloque la vue
+        if dist_to_line < wall.radius:
+            return True  # le mur bloque
 
     return False
-

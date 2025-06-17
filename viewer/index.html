@@ -1,34 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>RL Shooter Viewer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooter Simulation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <h2>RL Shooter Viewer</h2>
+    <div class="simulation-container">
+        <header class="simulation-header">
+            <h1><i class="fas fa-robot"></i>Multi-Agent Tactical Combat Simulator</h1>
+            <div class="simulation-controls">
+                <button id="playPauseBtn" class="control-btn"><i class="fas fa-pause"></i> Pause</button>
+                <button id="prevFrameBtn" class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button id="nextFrameBtn" class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <input type="range" id="speedControl" min="50" max="1000" value="200">
+                <span id="currentFrame">Frame: 0/0</span>
+                <span id="simulationTime">Time: 0s</span>
+            </div>
+        </header>
 
-    <div id="legend">
-        <span style="color:#00ffcc;">● Agent</span> |
-        <span style="color:#00ff00;">● Target</span> |
-        <span style="color:#ff3300;">● Danger</span> |
-        <span style="color:#ffff00;">● Energy</span> |
-        <span style="color:#ff00ff;">● Enemy</span> |
-        <span style="color:#aa00ff;">● Enemy Turret</span> |
-        <span style="color:#ff0088;">● Kamikaze</span> |
-        <span style="color:#ff5555;">● Projectile</span> |
-        <span style="color:#ff9900;">● Mine</span> |
-        <span style="color:#ffaa00;">● Explosion</span>
-    </div>
+        <div class="main-content">
+            <div class="simulation-view">
+                <canvas id="simCanvas"></canvas>
+            </div>
 
-    <canvas id="simCanvas" width="500" height="500"></canvas>
+            <div class="sidebar">
+                <div class="panel stats-panel">
+                    <h3><i class="fas fa-chart-bar"></i> Simulation Stats</h3>
+                    <div class="stats-grid">
+                        <div>
+                            <span class="stat-label">Agents Alive:</span>
+                            <span id="agentsAlive">0</span>
+                        </div>
+                        <div>
+                            <span class="stat-label">Objects:</span>
+                            <span id="objectsCount">0</span>
+                        </div>
+                        <div>
+                            <span class="stat-label">FPS:</span>
+                            <span id="fpsCounter">0</span>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="controls">
-        <button onclick="prevFrame()">⏮️ Précédent</button>
-        <button onclick="togglePlay()">⏯️ Play/Pause</button>
-        <button onclick="nextFrame()">⏭️ Suivant</button>
+                <div class="panel legend-panel">
+                    <h3><i class="fas fa-info-circle"></i> Legend</h3>
+                    <div class="legend-items" id="legendItems"></div>
+                </div>
+
+                <div class="panel agent-panel">
+                    <h3><i class="fas fa-user"></i> Selected Agent</h3>
+                    <div id="agentDetails" class="agent-details">
+                        <p>Select an agent to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="viewer.js"></script>

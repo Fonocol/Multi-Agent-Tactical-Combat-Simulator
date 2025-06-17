@@ -1,12 +1,12 @@
 from core.entity_types import EntityType, Role
 from .enemyBase import EnemyBase
-from core.utils import distance_to
+from core.utils import MAX_DRONES, distance_to
 import math
 import random
 
 class EnemyDrone(EnemyBase):  
     def __init__(self, x, y, patrol_radius=10, radius=3.0,fire_range = 10.0 ,patrol_type="circle",role='any'):
-        super().__init__(x, y, radius=radius, health=100, speed=0.1, etype="enemy_drone")
+        super().__init__(x, y, radius=radius, health=100, speed=0.1, etype=EntityType.ENERGY_DRONE)
         self.patrol_radius = patrol_radius
         self.center = (x, y)
         self.angle = 0.0
@@ -17,14 +17,21 @@ class EnemyDrone(EnemyBase):
         self.random_direction = (random.uniform(-1, 1), random.uniform(-1, 1))
         self.random_timer = 0
         
+        self.last_reproduction_time = 0
+        self.reproduction_cooldown = 50  # ticks minimum entre deux repros
+        self.health_cost = 20
+        
         self.role = role.lower()
 
     def update(self, env):
+        self.last_reproduction_time += 1
         self.find_target(env)
         if self.target:
             self.chase_or_attack(env)
         else:
             self.patrol()
+            
+        self._maybe_reproduce(env)
 
     def find_target(self, env):
         self.target = None
@@ -51,6 +58,7 @@ class EnemyDrone(EnemyBase):
             self.y += dy * self.speed * 2
         else:
             # Attack
+            
             if self.role == Role.JammerComunication:
                 env.spawn_jammer_communication(self.x, self.y,moving=True,owner=self)
             elif self.role == Role.SMOKER:
@@ -171,3 +179,37 @@ class EnemyDrone(EnemyBase):
         else:  # Default to circle
             self.x = self.center[0] + self.patrol_radius * math.cos(self.angle)
             self.y = self.center[1] + self.patrol_radius * math.sin(self.angle)
+
+    def _maybe_reproduce(self, env):
+            num_drones = sum(1 for e in env.objects if isinstance(e, EnemyDrone))
+            if num_drones >= MAX_DRONES:
+                return
+
+            if self.last_reproduction_time < self.reproduction_cooldown:
+                return
+
+            # Pas assez de santé
+            if self.health < self.health_cost + 10:
+                return
+
+            # Probabilité dynamique
+            repro_chance = max(0.001, 0.01 * (1 - num_drones / MAX_DRONES))
+            if random.random() < repro_chance:
+                self._reproduce(env)
+                
+                self.last_reproduction_time = 0
+                self.health -= self.health_cost
+                if self.health <= 0:
+                    self.alive = False
+
+    def _reproduce(self, env):
+        child = EnemyDrone(
+            x=self.x + random.uniform(-2, 2),
+            y=self.y + random.uniform(-2, 2),
+            patrol_radius=self.patrol_radius,
+            radius=self.radius,
+            fire_range=self.fire_range,
+            patrol_type=random.choice(["circle", "lemniscate", "random", "square"]),
+            role=self.role,
+        )
+        env.spawn_entity(child)
