@@ -21,7 +21,7 @@ class EliteDrone(EnemyBase):
         'intelligence': (0.5, 1.5)
     }
 
-    def __init__(self, x, y, patrol_radius=10, radius=3.0, fire_range=10.0, patrol_type="circle", role='any', dna=None):
+    def __init__(self, x, y, patrol_radius=10, radius=3.0, fire_range=10.0, patrol_type="circle", role:str='any', dna=None):
         super().__init__(x, y, radius=radius, health=100, speed=0.1, etype=EntityType.ENERGY_DRONE_ELITE)
         
         # Configuration de base

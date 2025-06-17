@@ -82,7 +82,7 @@ class Environment:
             visible = self.vision.get_visible(agent, self.objects)#on peu ajouter autre infos d'observation comme les echange de message
             action = agent.decide_action(visible)
             agent.perform_action(action, self)
-            visible = self.objects
+            #visible = self.objects
            
 
             step_info.append({

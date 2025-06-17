@@ -5,7 +5,7 @@ import math
 import random
 
 class EnemyDrone(EnemyBase):  
-    def __init__(self, x, y, patrol_radius=10, radius=3.0,fire_range = 10.0 ,patrol_type="circle",role='any'):
+    def __init__(self, x, y, patrol_radius=10, radius=3.0,fire_range = 10.0 ,patrol_type="circle",role:str='any'):
         super().__init__(x, y, radius=radius, health=100, speed=0.1, etype=EntityType.ENERGY_DRONE)
         self.patrol_radius = patrol_radius
         self.center = (x, y)

@@ -2,6 +2,7 @@ from typing import Any, Dict
 import numpy as np
 from core.entity import Entity
 from core.entity_types import EntityType
+from core.objects.smoke_zone import JammerCommunication
 from core.utils import is_blocked_by_wall
 
 
@@ -54,7 +55,7 @@ class Agent(Entity):
             'y': self.y,
             'angle': self.facing_angle,
             'length':self.effective_range,
-            'fov':self.effective_fov
+            'fov':self.effective_fov,
         }
         
     def to_dict(self)-> Dict[str, Any]:
@@ -65,7 +66,8 @@ class Agent(Entity):
                 'health': self.health,
                 'energy': self.energy,
                 'range':self.range,
-                'radius':self.radius
+                'radius':self.radius,
+                'id':self.id
     }
 
     
@@ -117,6 +119,8 @@ class Agent(Entity):
 
             if obj.etype == EntityType.JAMMER and dist <= obj.radius:
                 return [obj]  # Vision bloquée
+            
+            
 
         # Deuxième passe : vision normale
         for obj in objects:
@@ -167,7 +171,6 @@ class Agent(Entity):
             print(f"Agent @({self.x:.1f},{self.y:.1f}) est brouillé !")
             return []  # Communication bloquée
     
-
         messages = []
         visible_objects = self.get_vision(self.env.objects) if hasattr(self, 'env') else []
         for obj in visible_objects:
@@ -180,14 +183,21 @@ class Agent(Entity):
         return messages
 
     def receive_messages(self, messages):
-        if not self.can_communicate or self.is_jammed(self.env.objects):
+        if not self.can_communicate:
             self.inbox = []
             return
         
 
-
         self.inbox = [msg for msg in messages
                     if msg["sender"] != self.id and self._distance(msg["pos"], (self.x, self.y)) <= self.range]
+        
+        for obj in self.env.objects:
+            if obj.etype == EntityType.JammerComunication and \
+            self._distance((self.x, self.y), (obj.x, obj.y)) <= obj.radius:
+                
+                if getattr(obj, "fake_messages_enabled", False):
+                    self.inbox = obj.alter_messages(self, self.inbox)
+                    print('Messages falsifiés par brouillage')
 
     
     def is_jammed(self, objects):

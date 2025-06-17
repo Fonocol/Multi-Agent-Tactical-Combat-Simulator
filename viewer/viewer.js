@@ -16,28 +16,29 @@ class SimulationViewer {
         this.tooltip.className = 'tooltip';
         document.body.appendChild(this.tooltip);
 
-        // Color definitions
-        this.agentColors = ['#00ffcc', '#00ccff', '#66ffcc', '#33ccff', '#00ffaa', '#00aaff'];
+        this.agentColors = ['#00c8ff', '#1aff66', '#00e6e6', '#29abe2', '#00b894', '#00cec9'];
+
         this.colorMap = {
-            agent: '#00ffcc',
-            target: '#00ff00',
-            danger: '#ff3300',
-            energy: '#ffff00',
-            enemy: '#ff00ff',
-            enemy_turret: '#aa00ff',
-            enemy_kamikaze: '#ff0088',
-            projectile: '#ff5555',
-            mine: '#ff9900',
-            explosion: '#ffaa00',
-            objective: '#00ffff',
-            smoke: '#888888',
-            jammer: '#aa00aa',
-            wall: '#555555',
-            decoy: '#ff8800',
-            enemy_drone: '#ff00aa',
-            enemy_drone_elite: '#cc00ff',
-            jammer_comunication: '#aa00aa'
+            agent: '#00c8ff', // Cyan clair
+            target: '#00e600', // Vert néon (plus lisible)
+            danger: '#ff1a1a', // Rouge vif (plus net que #ff3300)
+            energy: '#ffe600', // Jaune soleil (plus chaud)
+            enemy: '#e600ff', // Violet fluo (très visible)
+            enemy_turret: '#8e44ad', // Violet foncé (fort contraste)
+            enemy_kamikaze: '#e84393', // Rose éclatant (très distinctif)
+            projectile: '#ff3d00', // Orange-rouge vif (explosif)
+            mine: '#ff6f00', // Orange foncé (risque visible)
+            explosion: '#ffc400', // Jaune-orange intense
+            objective: '#00fff7', // Bleu-vert néon (différent de "agent")
+            smoke: '#aaaaaa', // Gris plus clair (plus visible)
+            jammer: '#6c5ce7', // Indigo électrique (pas trop saturé)
+            wall: '#444444', // Gris foncé pour ne pas voler la vedette
+            decoy: '#fdcb6e', // Jaune pâle (facile à distinguer)
+            enemy_drone: '#d63031', // Rouge intense (différent de danger)
+            enemy_drone_elite: '#be2edd', // Violet élite (plus luxueux)
+            jammer_comunication: '#a29bfe' // Lavande électrique (visible mais calme)
         };
+
 
         this.initControls();
         this.initCanvas();
@@ -137,13 +138,15 @@ class SimulationViewer {
                 (entity.radius || 1) * this.scale * 1.5
             );
             glow.addColorStop(0, color);
-            glow.addColorStop(1, 'rgba(75, 72, 72, 0.03)');
+            glow.addColorStop(1, 'rgb(255, 0, 0)');
             this.ctx.fillStyle = glow;
+            this.ctx.fill();
+        } else {
+            this.ctx.fillStyle = color;
             this.ctx.fill();
         }
 
-        this.ctx.fillStyle = color;
-        this.ctx.fill();
+
 
         // Add border for selected agent
         if (this.selectedAgent && entity.id === this.selectedAgent.id) {
