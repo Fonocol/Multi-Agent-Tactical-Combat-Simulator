@@ -3,7 +3,7 @@ from core.utils import distance_to
 
 class ObjectiveItem(Entity):
     def __init__(self, x, y, radius=2.0, reward=20):
-        super().__init__(x, y, radius, etype="objective")
+        super().__init__(x, y, radius, etype="target")
         self.collected = False
         self.reward = reward
 

@@ -9,7 +9,7 @@ from core.objects.objectBase import ObjectBase
 class SmokeZone(ObjectBase):
     def __init__(self, x, y, radius=5.0,moving=False, ttl=15, speed=1.5):
         super().__init__(x, y, radius=radius,speed=speed,moving=moving ,etype=EntityType.SMOKE,ttl=ttl)
-        self.vision_penalty = 0.8  # Réduit la range de vision à 80%
+        self.vision_penalty = 0.95  # Réduit la range de vision à 80%
 
         
     def get_vision_penalty(self):

@@ -4,7 +4,7 @@ from core.utils import distance_to
 
 
 class Projectile(Entity):
-    def __init__(self, x, y, dx, dy, owner=None, speed=1.5, radius=2, damage=10):
+    def __init__(self, x, y, dx, dy, owner=None, speed=1.5, radius=0.8, damage=10):
         super().__init__(x, y, radius, etype="projectile")
         self.dx = dx
         self.dy = dy

@@ -1,7 +1,9 @@
 import json
+from typing import Dict
 from core.enemys.decoy import Decoy
+from core.entity import Entity
 from core.objects.explosion import Explosion
-from core.objects.smoke_zone import  JammerCommunication, SmokeZone
+from core.objects.smoke_zone import  JammerCommunication, JammerZone, SmokeZone
 from core.scene_objects import spawn_agent, spawn_objects
 from core.vision import Vision
 from core.objects.projectile import Projectile
@@ -17,6 +19,8 @@ class Environment:
         self.history = []
         
         self.time =0
+        
+        
 
     def _spawn_objects(self):
         return spawn_objects()
@@ -41,6 +45,10 @@ class Environment:
     def spawn_smoke_zone(self, x, y,moving, owner=None):
         smoke = SmokeZone(x, y,radius=5.0,moving=moving,ttl=10)
         self.objects.append(smoke)
+        
+    def spawn_jammer(self, x, y,moving, owner=None):
+        jammerZone = JammerZone(x, y,radius=5.0,moving=moving,ttl=10)
+        self.objects.append(jammerZone)
         
     def spawn_entity(self,child):
         self.objects.append(child)
@@ -82,7 +90,7 @@ class Environment:
             visible = self.vision.get_visible(agent, self.objects)#on peu ajouter autre infos d'observation comme les echange de message
             action = agent.decide_action(visible)
             agent.perform_action(action, self)
-            #visible = self.objects
+            visible = self.objects
            
 
             step_info.append({

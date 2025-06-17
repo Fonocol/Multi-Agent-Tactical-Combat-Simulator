@@ -118,6 +118,7 @@ class Agent(Entity):
                 self.effective_range *= obj.get_vision_penalty()
 
             if obj.etype == EntityType.JAMMER and dist <= obj.radius:
+                self.effective_range =0
                 return [obj]  # Vision bloquée
             
             
@@ -197,7 +198,7 @@ class Agent(Entity):
                 
                 if getattr(obj, "fake_messages_enabled", False):
                     self.inbox = obj.alter_messages(self, self.inbox)
-                    print('Messages falsifiés par brouillage')
+                    #print('Messages falsifiés par brouillage')
 
     
     def is_jammed(self, objects):

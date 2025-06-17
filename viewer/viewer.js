@@ -122,7 +122,7 @@ class SimulationViewer {
         this.ctx.arc(
             entity.x * this.scale,
             entity.y * this.scale,
-            (entity.radius || 1) * this.scale,
+            (entity.radius || 1) * this.scale / 5,
             0,
             2 * Math.PI
         );

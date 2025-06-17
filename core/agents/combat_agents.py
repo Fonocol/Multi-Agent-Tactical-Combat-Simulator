@@ -17,8 +17,8 @@ class ScoutAgent(Agent):
 
 
 class SniperAgent(Agent):
-    def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=60, fov_deg=90)
+    def __init__(self, x, y, radius=0.8,range_radius=60):
+        super().__init__(x, y, radius=radius, range_radius=range_radius, fov_deg=90)
         self.attack_range = 10.0
         self.attack_power = 40
 
@@ -52,7 +52,9 @@ class GuardAgent(Agent):
         self.facing_angle = np.arctan2(vec[1], vec[0])
         return {"type": "move", "dx": vec[0], "dy": vec[1]}
 
-
+#Mission Kamikaze anti-tourelle  atteindre et detruire une tourelle il peu
+# cacher invisible pour les tourelle par exemple une action qui le rend invisible au tourelle pour un tempd donner 
+#a voir avec l'evolution par exemple le Decoy 
 class KamikazeAgent(Agent):
     def __init__(self, x, y, radius=0.8):
         super().__init__(x, y, radius=radius, range_radius=25, fov_deg=100)
