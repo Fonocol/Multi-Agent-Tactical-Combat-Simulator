@@ -9,11 +9,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
+
+
 <body>
     <div class="simulation-container">
         <header class="simulation-header">
             <h1><i class="fas fa-robot"></i>Multi-Agent Tactical Combat Simulator</h1>
             <div class="simulation-controls">
+                <!-- Ajout du sélecteur d'épisode -->
+                <div class="episode-selector">
+                    <label for="episodeSelect"><i class="fas fa-list-ol"></i> Episode:</label>
+                    <select id="episodeSelect" class="control-select">
+                <option value="episode_100">Episode 100</option>
+                <!-- Les options seront ajoutées dynamiquement -->
+            </select>
+                </div>
+
                 <button id="playPauseBtn" class="control-btn"><i class="fas fa-pause"></i> Pause</button>
                 <button id="prevFrameBtn" class="control-btn"><i class="fas fa-step-backward"></i></button>
                 <button id="nextFrameBtn" class="control-btn"><i class="fas fa-step-forward"></i></button>

@@ -1,0 +1,9 @@
+[{
+        "id": "episode_100",
+        "name": "Episode 100 - Entrainement"
+    },
+    { "id": "episode_200", "name": "Episode 200 - Entrainement" },
+    { "id": "episode_300", "name": "Episode 300 - Combat" },
+    { "id": "episode_400", "name": "Episode 400 - Combat" },
+    { "id": "episode_500", "name": "Episode 500 - Combat" }
+]

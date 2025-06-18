@@ -40,11 +40,16 @@ class SimulationViewer {
         };
 
 
+        this.currentEpisode = 'episode_100'; // Épisode par défaut
+        this.availableEpisodes = []; // Liste des épisodes disponibles
+
         this.initControls();
         this.initCanvas();
-        this.loadData();
-        this.initLegend();
-        this.animate();
+        this.discoverAvailableEpisodes().then(() => {
+            this.loadData();
+            this.initLegend();
+            this.animate();
+        });
     }
 
     initControls() {
@@ -73,6 +78,37 @@ class SimulationViewer {
         });
     }
 
+
+    async discoverAvailableEpisodes() {
+        try {
+            const response = await fetch('../data/available_episodes.json');
+            this.availableEpisodes = await response.json();
+            this.initEpisodeSelector();
+        } catch (error) {
+            console.error('Could not load episode list, using default', error);
+            this.availableEpisodes = [{ id: 'episode_100', name: 'Episode 100' }];
+            this.initEpisodeSelector();
+        }
+    }
+
+    initEpisodeSelector() {
+        const select = document.getElementById('episodeSelect');
+        select.innerHTML = '';
+
+        this.availableEpisodes.forEach(episode => {
+            const option = document.createElement('option');
+            option.value = episode.id;
+            option.textContent = episode.name;
+            select.appendChild(option);
+        });
+
+        select.value = this.currentEpisode;
+        select.addEventListener('change', (e) => {
+            this.currentEpisode = e.target.value;
+            this.loadData();
+        });
+    }
+
     initLegend() {
         const legendContainer = document.getElementById('legendItems');
         legendContainer.innerHTML = '';
@@ -88,10 +124,12 @@ class SimulationViewer {
         });
     }
 
+
     async loadData() {
         try {
-            const response = await fetch('../data/output.json');
+            const response = await fetch(`../data/${this.currentEpisode}.json`);
             this.frames = await response.json();
+            this.frameIndex = 0;
             this.updateFrameInfo();
         } catch (error) {
             console.error('Error loading simulation data:', error);
@@ -122,7 +160,7 @@ class SimulationViewer {
         this.ctx.arc(
             entity.x * this.scale,
             entity.y * this.scale,
-            (entity.radius || 1) * this.scale / 5,
+            (entity.radius || 1) * this.scale / 2,
             0,
             2 * Math.PI
         );
