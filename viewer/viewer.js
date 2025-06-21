@@ -40,7 +40,7 @@ class SimulationViewer {
         };
 
 
-        this.currentEpisode = 'episode_100'; // Épisode par défaut
+        this.currentEpisode = 'output'; // Épisode par défaut
         this.availableEpisodes = []; // Liste des épisodes disponibles
 
         this.initControls();
@@ -131,6 +131,7 @@ class SimulationViewer {
             this.frames = await response.json();
             this.frameIndex = 0;
             this.updateFrameInfo();
+
         } catch (error) {
             console.error('Error loading simulation data:', error);
         }

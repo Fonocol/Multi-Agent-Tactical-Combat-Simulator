@@ -1,9 +1,1 @@
-[{
-        "id": "episode_100",
-        "name": "Episode 100 - Entrainement"
-    },
-    { "id": "episode_200", "name": "Episode 200 - Entrainement" },
-    { "id": "episode_300", "name": "Episode 300 - Combat" },
-    { "id": "episode_400", "name": "Episode 400 - Combat" },
-    { "id": "episode_500", "name": "Episode 500 - Combat" }
-]
+[{"id": "episode_20", "name": "Episode 20 - Entrainement"}, {"id": "episode_40", "name": "Episode 40 - Entrainement"}, {"id": "episode_60", "name": "Episode 60 - Entrainement"}, {"id": "episode_80", "name": "Episode 80 - Entrainement"}, {"id": "episode_100", "name": "Episode 100 - Entrainement"}, {"id": "episode_120", "name": "Episode 120 - Entrainement"}, {"id": "episode_140", "name": "Episode 140 - Entrainement"}, {"id": "episode_160", "name": "Episode 160 - Entrainement"}, {"id": "episode_180", "name": "Episode 180 - Entrainement"}, {"id": "episode_200", "name": "Episode 200 - Entrainement"}, {"id": "episode_220", "name": "Episode 220 - Entrainement"}, {"id": "episode_240", "name": "Episode 240 - Entrainement"}, {"id": "episode_260", "name": "Episode 260 - Entrainement"}, {"id": "episode_280", "name": "Episode 280 - Entrainement"}, {"id": "episode_300", "name": "Episode 300 - Entrainement"}, {"id": "episode_320", "name": "Episode 320 - Entrainement"}, {"id": "episode_340", "name": "Episode 340 - Entrainement"}, {"id": "episode_360", "name": "Episode 360 - Entrainement"}, {"id": "episode_380", "name": "Episode 380 - Entrainement"}, {"id": "episode_400", "name": "Episode 400 - Entrainement"}, {"id": "episode_420", "name": "Episode 420 - Entrainement"}, {"id": "episode_440", "name": "Episode 440 - Entrainement"}, {"id": "episode_460", "name": "Episode 460 - Entrainement"}, {"id": "episode_480", "name": "Episode 480 - Entrainement"}, {"id": "episode_500", "name": "Episode 500 - Entrainement"}]
