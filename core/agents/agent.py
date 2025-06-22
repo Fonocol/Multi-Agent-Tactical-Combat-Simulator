@@ -2,13 +2,12 @@ from typing import Any, Dict
 import numpy as np
 from core.entity import Entity
 from core.entity_types import EntityType
-from core.objects.smoke_zone import JammerCommunication
 from core.utils import is_blocked_by_wall
 
 
 class Agent(Entity):
     def __init__(self, x:float, y:float, radius:float=1.0,range_radius:float=30,fov_deg:float=90):
-        super().__init__(x, y, radius, etype="agent")
+        super().__init__(x, y, radius, etype=EntityType.AGENT)
         self.energy = 100
         self.health = 100
         self.facing_angle = 0.0
@@ -19,6 +18,12 @@ class Agent(Entity):
         self.effective_fov = self.fov
         self.can_communicate = True
         self.inbox = []
+        
+        self.cloaked = False
+        self.cloak_duration = 0
+        self.time_alive = 0
+
+        self.last_attack_success = False
 
     def decide_action(self, observation=None):
         """
@@ -37,6 +42,7 @@ class Agent(Entity):
     
     
     def perform_action(self, action, env):
+        
         """
         Exécute une action donnée par decide_action ou par une policy.
         """
@@ -44,8 +50,11 @@ class Agent(Entity):
             self.move(action["dx"], action["dy"], env)
 
         elif action["type"] == "attack":
-            visible = self.get_vision(env.objects)
-            self.attack(visible)
+            #visible = self.get_vision(env.objects)
+            #self.attack(visible,env)
+            self.attack(env)
+            
+        self.update()
 
         # D'autres types : "use_item", "scan", "defend", "wait"...
     
@@ -136,6 +145,9 @@ class Agent(Entity):
                 continue
             if is_blocked_by_wall(self, obj, walls):
                 continue
+            
+            if getattr(obj, "cloaked", False):
+                continue  # Ignore les agents camouflés
 
             direction = np.arctan2(vec[1], vec[0])
             delta = self._angle_diff(direction, self.facing_angle)
@@ -151,25 +163,36 @@ class Agent(Entity):
         return diff
 
     
-    def attack(self, objects, damage=20, attack_range=3.0):
-        self_pos = np.array([self.x, self.y])
-        for obj in objects:
-            if obj.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE] and obj.alive:
-                dist = np.linalg.norm(self_pos - np.array([obj.x, obj.y]))
-                if dist <= attack_range:
-                    obj.take_damage(damage)
-                    print(f"[Agent @({self.x:.1f},{self.y:.1f})] a attaqué un ennemi @({obj.x:.1f},{obj.y:.1f})")
-                    return True
-        return False
+    # def attack(self, objects,env, damage=20, attack_range=3.0):
+    #     self_pos = np.array([self.x, self.y])
+    #     env.spawn_projectile(self.x, self.y, dx, dy, self)
+    #     for obj in objects:
+    #         if obj.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE] and obj.alive:
+    #             dist = np.linalg.norm(self_pos - np.array([obj.x, obj.y]))
+                
+    #             if dist <= attack_range:
+    #                 obj.take_damage(damage)
+    #                 self.last_attack_success = True
+    #                 #print(f"[Agent @({self.x:.1f},{self.y:.1f})] a attaqué un ennemi @({obj.x:.1f},{obj.y:.1f})")
+    #                 return True
+    #     return False
+    
+    def attack(self, env, damage=20):
+        dx = np.cos(self.facing_angle)
+        dy = np.sin(self.facing_angle)
+        env.spawn_projectile(self.x, self.y, dx, dy, self)
+        # self.last_attack_success sera mis à True si le projectile touche plus tard
+        return True
+    
+    def reset_step_flags(self):
+        self.last_attack_success = False
 
-    
-    
     def send_message(self):
         if not self.can_communicate:
             return []
 
         if self.is_jammed(self.env.objects):
-            print(f"Agent @({self.x:.1f},{self.y:.1f}) est brouillé !")
+            #print(f"Agent @({self.x:.1f},{self.y:.1f}) est brouillé !")
             return []  # Communication bloquée
     
         messages = []
@@ -211,4 +234,14 @@ class Agent(Entity):
 
     def _distance(self, p1, p2):
         return np.linalg.norm(np.array(p1) - np.array(p2))
+    
+    def update(self):
+        if self.cloak_duration > 0:
+            self.cloak_duration -= 1
+            if self.cloak_duration == 0:
+                self.cloaked = False
+        
+        if self.time_alive <305:        
+            self.time_alive +=0.1
+
 

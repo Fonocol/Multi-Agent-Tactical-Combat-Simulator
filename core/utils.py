@@ -38,3 +38,22 @@ def is_blocked_by_wall(agent, target, walls):
             return True  # le mur bloque
 
     return False
+
+
+def to_serializable(obj):
+    if isinstance(obj, dict):
+        return {k: to_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [to_serializable(i) for i in obj]
+    elif isinstance(obj, (np.integer, np.int32, np.int64)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, np.bool_):
+        return bool(obj)
+    else:
+        return obj
+
+   
+    
+    

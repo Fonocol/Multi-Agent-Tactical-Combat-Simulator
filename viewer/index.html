@@ -4,33 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shooter Simulation</title>
+    <title>Tactical Agent Simulation Viewer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-
-
 <body>
     <div class="simulation-container">
         <header class="simulation-header">
-            <h1><i class="fas fa-robot"></i>Multi-Agent Tactical Combat Simulator</h1>
+            <h1><i class="fas fa-robot"></i> Tactical Agent Simulation Viewer</h1>
             <div class="simulation-controls">
-                <!-- Ajout du sélecteur d'épisode -->
                 <div class="episode-selector">
                     <label for="episodeSelect"><i class="fas fa-list-ol"></i> Episode:</label>
                     <select id="episodeSelect" class="control-select">
-                <option value="episode_100">Episode 100</option>
-                <!-- Les options seront ajoutées dynamiquement -->
-            </select>
+                        <option value="episode_100">Episode 100</option>
+                    </select>
                 </div>
 
                 <button id="playPauseBtn" class="control-btn"><i class="fas fa-pause"></i> Pause</button>
                 <button id="prevFrameBtn" class="control-btn"><i class="fas fa-step-backward"></i></button>
                 <button id="nextFrameBtn" class="control-btn"><i class="fas fa-step-forward"></i></button>
                 <input type="range" id="speedControl" min="50" max="1000" value="200">
-                <span id="currentFrame">Frame: 0/0</span>
-                <span id="simulationTime">Time: 0s</span>
+                <div class="frame-info">
+                    <span id="currentFrame"><i class="fas fa-film"></i> Frame: 0/0</span>
+                    <span id="simulationTime"><i class="fas fa-clock"></i> Time: 0.0s</span>
+                </div>
             </div>
         </header>
 
@@ -43,28 +41,36 @@
                 <div class="panel stats-panel">
                     <h3><i class="fas fa-chart-bar"></i> Simulation Stats</h3>
                     <div class="stats-grid">
-                        <div>
-                            <span class="stat-label">Agents Alive:</span>
-                            <span id="agentsAlive">0</span>
+                        <div class="stat-item">
+                            <span class="stat-label">Agents Alive</span>
+                            <span id="agentsAlive" class="stat-value">0</span>
                         </div>
-                        <div>
-                            <span class="stat-label">Objects:</span>
-                            <span id="objectsCount">0</span>
+                        <div class="stat-item">
+                            <span class="stat-label">Objects</span>
+                            <span id="objectsCount" class="stat-value">0</span>
                         </div>
-                        <div>
-                            <span class="stat-label">FPS:</span>
-                            <span id="fpsCounter">0</span>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Health</span>
+                            <span id="avgHealth" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Energy</span>
+                            <span id="avgEnergy" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">FPS</span>
+                            <span id="fpsCounter" class="stat-value">0</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="panel legend-panel">
-                    <h3><i class="fas fa-info-circle"></i> Legend</h3>
+                    <h3><i class="fas fa-info-circle"></i> Entity Legend</h3>
                     <div class="legend-items" id="legendItems"></div>
                 </div>
 
                 <div class="panel agent-panel">
-                    <h3><i class="fas fa-user"></i> Selected Agent</h3>
+                    <h3><i class="fas fa-user"></i> Agent Details</h3>
                     <div id="agentDetails" class="agent-details">
                         <p>Select an agent to view details</p>
                     </div>

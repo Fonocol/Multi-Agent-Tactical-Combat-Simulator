@@ -5,20 +5,25 @@ from core.entity import Entity
 from core.objects.explosion import Explosion
 from core.objects.smoke_zone import  JammerCommunication, JammerZone, SmokeZone
 from core.scene_objects import spawn_agent, spawn_objects
+from core.utils import to_serializable
 from core.vision import Vision
 from core.objects.projectile import Projectile
 
 
 class Environment:
-    def __init__(self, width=100, height=100):
+    def __init__(self, width=100, height=100, use_rl=False):
         self.width = width
         self.height = height
+        self.use_rl=use_rl
+        
         self.agents =self._spawn_agent()
         self.vision = Vision()
         self.objects = self._spawn_objects()
         self.history = []
         
+        
         self.time =0
+        
         
         
 
@@ -26,7 +31,7 @@ class Environment:
         return spawn_objects()
         
     def _spawn_agent(self):
-        return spawn_agent()
+        return spawn_agent(self.use_rl)
 
         
     def spawn_explosion(self, x, y, radius=3.0):
@@ -70,6 +75,7 @@ class Environment:
         # Étape 2 : Redistribuer les messages
         for agent in self.agents:
             agent.receive_messages(all_messages)
+            agent.reset_step_flags()  #mise a jour des flags ici avant les methode update()
             
       
             
@@ -84,11 +90,17 @@ class Environment:
         for agent in self.agents:
             if not agent.alive:
                 continue
-
-            #
+            # if agent.last_attack_success==True:
+            #     print("toucher un objet agent ",agent.last_attack_success)
             # Perception de l'agent
             visible = self.vision.get_visible(agent, self.objects)#on peu ajouter autre infos d'observation comme les echange de message
-            action = agent.decide_action(visible)
+ 
+            # S’il y a une action RL injectée, on l’utilise
+            if hasattr(agent, "external_action") and agent.external_action is not None:
+                action = agent.external_action
+                agent.external_action = None
+            else:
+                action = agent.decide_action(visible)
             agent.perform_action(action, self)
             visible = self.objects
            
@@ -96,6 +108,7 @@ class Environment:
             step_info.append({
                 'agent': agent.to_dict(),
                 'facing': agent.get_orientation(),
+                'action': action,
                 'visible': [o.to_dict() for o in visible if getattr(o, "alive", True)]
             })
 
@@ -103,8 +116,10 @@ class Environment:
         self.objects = [o for o in self.objects if getattr(o, "alive", True)]
         self.agents = [a for a in self.agents if a.alive]
 
-        print(len(self.objects))
+        #print(len(self.objects))
+     
         self.history.append(step_info)
+        #print(f"[STEP] Frame {self.time} — total history size: {len(self.history)}")
 
 
     def run(self, steps=100):
@@ -113,9 +128,7 @@ class Environment:
 
     def export(self, path="data/output.json"): 
         with open(path, "w") as f:
-            json.dump(self.history, f, indent=2)
-            
-        with open('data/output.json', "w") as f:
-            json.dump(self.history, f, indent=2)
-
-
+            json.dump(to_serializable(self.history), f, indent=2)
+    
+    
+    

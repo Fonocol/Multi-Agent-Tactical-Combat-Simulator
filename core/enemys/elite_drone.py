@@ -298,7 +298,7 @@ class EliteDrone(EnemyBase):
                 env.spawn_projectile(self.x, self.y, pred_dx, pred_dy, self)
                 attack_success = pred_mag > 0
             else:
-                env.spawn_projectile(self.x, self.y, dx, dy, self)
+                env.spawn_projectile(self.x, self.y, dx, dy)
                 attack_success = True
         
         if not attack_success:

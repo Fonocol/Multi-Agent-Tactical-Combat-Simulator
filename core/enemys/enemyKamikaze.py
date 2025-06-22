@@ -4,11 +4,11 @@ from core.utils import distance_to
 
 
 class EnemyKamikaze(EnemyBase):
-    def __init__(self, x, y, radius=2.5, speed=0.2, explosion_radius=5.0, explosion_damage=50):
+    def __init__(self, x, y, radius=2.5, speed=0.2, explosion_radius=5.0, explosion_damage=20):
         super().__init__(x, y, radius=radius, health=50, speed=speed, etype="enemy_kamikaze")
         self.explosion_radius = explosion_radius
         self.explosion_damage = explosion_damage
-        self.activation_radius = 50.0
+        self.activation_radius = 30.0
         self.explosion_timer = 0
         self.explosion_delay = 10
         self.target = None

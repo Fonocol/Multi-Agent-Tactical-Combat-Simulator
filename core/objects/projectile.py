@@ -4,7 +4,7 @@ from core.utils import distance_to
 
 
 class Projectile(Entity):
-    def __init__(self, x, y, dx, dy, owner=None, speed=1.5, radius=0.8, damage=10):
+    def __init__(self, x, y, dx, dy, owner=None, speed=1.5, radius=0.8, damage=5):
         super().__init__(x, y, radius, etype="projectile")
         self.dx = dx
         self.dy = dy
@@ -23,26 +23,40 @@ class Projectile(Entity):
             self.alive = False
             return
 
+        # Avancer le projectile
         self.x += self.dx * self.speed
         self.y += self.dy * self.speed
 
-        # Collision avec agents
+        # === 1. Collision avec AGENTS ===
         for agent in env.agents:
             if agent is self.owner:
-                continue
+                continue  # Ne pas toucher le tireur
             if agent.alive and distance_to(self, agent) <= (self.radius + agent.radius):
-                agent.take_damage(self.damage)
-                self.alive = False
-                return
+                if getattr(self.owner, "etype", None) in [EntityType.ENEMY, EntityType.ENERGY_DRONE,EntityType.ENERGY_DRONE_ELITE, EntityType.ENERGY_KAMIKAZE]:
+                    agent.take_damage(self.damage)
+                    self.alive = False
+                    return
 
-        # Collision avec objets (ex: murs, ennemis ?)
+        # === 2. Collision avec ENNEMIS ===
         for obj in env.objects:
-            if obj is self or obj.etype in [EntityType.PROJECTILE, EntityType.ENEMY]:
+            if obj is self or not hasattr(obj, "alive") or not obj.alive:
                 continue
-            if hasattr(obj, "alive") and not obj.alive:
+
+            if obj.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE, EntityType.ENERGY_DRONE_ELITE]:
+                if getattr(self.owner, "etype", None) == EntityType.AGENT:
+                    if distance_to(self, obj) <= (self.radius + obj.radius):
+                        obj.take_damage(self.damage)
+                        self.owner.last_attack_success = True 
+                        self.alive = False
+                        return
+
+        # === 3. Collision avec OBJETS SPÉCIAUX ===
+        for obj in env.objects:
+            if obj is self or not hasattr(obj, "alive") or not obj.alive:
                 continue
-            
-            if obj.etype in [EntityType.AGENT,EntityType.WALL]:
+
+            if obj.etype in [EntityType.WALL, EntityType.AGENT, EntityType.DECOY]:
                 if distance_to(self, obj) <= (self.radius + obj.radius):
                     self.alive = False
                     return
+

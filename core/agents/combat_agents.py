@@ -4,7 +4,7 @@ from core.entity_types import EntityType
 
 class ScoutAgent(Agent):
     def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=50, fov_deg=160)
+        super().__init__(x, y, radius=radius, range_radius=45, fov_deg=120)
         self.speed = 2.0
 
     def decide_action(self, observation=None):
@@ -14,6 +14,58 @@ class ScoutAgent(Agent):
 
         self.facing_angle = np.arctan2(vec[1], vec[0])
         return {"type": "move", "dx": vec[0], "dy": vec[1]}
+    
+    def perform_action(self, action, env):
+
+        """
+        Exécute une action donnée par decide_action ou par une policy.
+        """
+        action_type = action["type"]
+
+        if action_type == "move":
+            dx, dy = action.get("dx", 0), action.get("dy", 0)
+            vec = np.array([dx, dy], dtype=np.float64)
+            norm = np.linalg.norm(vec)
+            if norm != 0:
+                vec /= norm
+                self.facing_angle = np.arctan2(vec[1], vec[0])
+            vec *= getattr(self, 'speed', 1.0)  # Fallback à 1.0 si pas d’attribut speed
+            self.move(vec[0], vec[1], env)
+
+        elif action_type == "wait":
+            # L'agent ne fait rien ce tick
+            pass
+
+        elif action_type == "scan":
+            # Étendre temporairement sa portée de vision
+            original_range = self.range
+            original_fov = self.fov
+            self.effective_range = original_range * 1.5
+            self.effective_fov = np.pi  # Vision à 180° temporairement
+            # Le scan est pris en compte dans get_vision()
+
+
+        elif action_type == "cloak":
+            # Rend l’agent temporairement invisible
+            self.cloaked = True
+            self.cloak_duration = 5  # durée en ticks
+            # Ajoute une logique ailleurs pour réduire cloak_duration à chaque tick
+
+        elif action_type == "attack":
+            #visible = self.get_vision(env.objects)
+            #self.attack(visible)
+            self.attack(env)
+
+        else:
+            # Action inconnue : l'ignorer ou raise une erreur
+            pass
+        
+        self.update()
+
+
+        # Autres types d’actions ici plus tard
+
+        # D'autres types : "use_item", "scan", "defend", "wait"...
 
 
 class SniperAgent(Agent):
@@ -27,8 +79,8 @@ class SniperAgent(Agent):
         targets = [o for o in visible if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE]]
         return {"type": "attack"} if targets else super().decide_action()
 
-    def attack(self, objects):
-        return super().attack(objects, damage=self.attack_power, attack_range=self.attack_range)
+    def attack(self,env):
+        return super().attack(damage=self.attack_power,env=env)
 
 
 class GuardAgent(Agent):

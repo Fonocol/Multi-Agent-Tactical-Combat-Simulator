@@ -14,15 +14,14 @@ class EnemyBase(Entity):
         if self.health <= 0:
             self.alive = False
             
-    def to_dict(self)-> Dict[str, Any]:
-        return {
-            "type": self.etype,
-            "x": self.x,
-            "y": self.y,
-            "radius": self.radius,
-            "alive": self.alive,
+  
+    def to_dict(self) -> Dict[str, Any]:
+        data = super().to_dict() 
+         
+        data.update({
             'health':self.health
-        }
+        })
+        return data
 
     def update(self, env):
         raise NotImplementedError("Chaque type d'ennemi doit redéfinir update()")

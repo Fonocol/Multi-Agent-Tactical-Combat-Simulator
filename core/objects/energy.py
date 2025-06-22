@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from core.entity import Entity
 from core.utils import distance_to
 
@@ -13,3 +14,10 @@ class EnergySource(Entity):
                 agent.energy += self.energy
                 self.alive = False
                 break
+            
+    def to_dict(self) -> Dict[str, Any]:
+        data = super().to_dict()  
+        data.update({
+            "energy": self.energy
+        })
+        return data
