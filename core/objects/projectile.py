@@ -4,7 +4,7 @@ from core.utils import distance_to
 
 
 class Projectile(Entity):
-    def __init__(self, x, y, dx, dy, owner=None, speed=1.5, radius=0.8, damage=5):
+    def __init__(self, x, y, dx, dy, owner=None, speed=1.5, radius=1.5, damage=15):
         super().__init__(x, y, radius, etype="projectile")
         self.dx = dx
         self.dy = dy
@@ -12,7 +12,7 @@ class Projectile(Entity):
         self.damage = damage
         self.owner = owner
         self.alive = True
-        self.ttl = 20  # Durée de vie max (steps)
+        self.ttl = 40  # Durée de vie max (steps)
 
     def update(self, env):
         if not self.alive:
@@ -32,7 +32,7 @@ class Projectile(Entity):
             if agent is self.owner:
                 continue  # Ne pas toucher le tireur
             if agent.alive and distance_to(self, agent) <= (self.radius + agent.radius):
-                if getattr(self.owner, "etype", None) in [EntityType.ENEMY, EntityType.ENERGY_DRONE,EntityType.ENERGY_DRONE_ELITE, EntityType.ENERGY_KAMIKAZE]:
+                if getattr(self.owner, "etype", None) in [EntityType.ENEMY, EntityType.ENERGY_DRONE,EntityType.ENERGY_DRONE_ELITE, EntityType.ENERGY_KAMIKAZE,EntityType.ENEMY_TURREL]:
                     agent.take_damage(self.damage)
                     self.alive = False
                     return
@@ -42,7 +42,7 @@ class Projectile(Entity):
             if obj is self or not hasattr(obj, "alive") or not obj.alive:
                 continue
 
-            if obj.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE, EntityType.ENERGY_DRONE_ELITE]:
+            if obj.etype in [EntityType.ENEMY,EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE, EntityType.ENERGY_DRONE_ELITE,EntityType.ENEMY_TURREL]:
                 if getattr(self.owner, "etype", None) == EntityType.AGENT:
                     if distance_to(self, obj) <= (self.radius + obj.radius):
                         obj.take_damage(self.damage)

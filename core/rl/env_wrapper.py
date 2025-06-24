@@ -1,15 +1,10 @@
 # core/rl/env_wrapper.py
-import os
 import numpy as np
-from core.agents.agent import Agent
-from core.enemys.enemyKamikaze import EnemyKamikaze
 from core.entity_types import EntityType
 from core.environment import Environment
 from core.mini_map import extract_minimap_tensor
 from core.objects.energy import EnergySource
-from core.objects.explosion import Explosion
 from core.objects.quest_item import ObjectiveItem
-from core.objects.smoke_zone import JammerZone, SmokeZone
 from core.utils import distance_to
 
 

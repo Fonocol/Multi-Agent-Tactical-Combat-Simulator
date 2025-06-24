@@ -18,7 +18,7 @@ class SmokeZone(ObjectBase):
    
 #bloc la vision
 class JammerZone(ObjectBase):  
-    def __init__(self, x, y, radius=6.0,moving=False, ttl=15, speed=1.5):
+    def __init__(self, x, y, radius=20.0,moving=False, ttl=15, speed=1.5):
         super().__init__(x, y, radius=radius,speed=speed,moving=moving ,etype=EntityType.JAMMER,ttl=ttl)
         self.block_vision = True
 

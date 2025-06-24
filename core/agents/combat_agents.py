@@ -4,7 +4,7 @@ from core.entity_types import EntityType
 
 class ScoutAgent(Agent):
     def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=35, fov_deg=120)
+        super().__init__(x, y, radius=radius, range_radius=90, fov_deg=120)
         self.speed = 2.0
 
     def decide_action(self, observation=None):
@@ -71,14 +71,14 @@ class ScoutAgent(Agent):
 
 
 class SniperAgent(Agent):
-    def __init__(self, x, y, radius=0.8,range_radius=60):
+    def __init__(self, x, y, radius=0.8,range_radius=100):
         super().__init__(x, y, radius=radius, range_radius=range_radius, fov_deg=90)
         self.attack_range = 10.0
         self.attack_power = 40
 
     def decide_action(self, observation=None):
         visible = observation or []
-        targets = [o for o in visible if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE]]
+        targets = [o for o in visible if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE,EntityType.ENERGY_DRONE_ELITE,EntityType.ENEMY_TURREL]]
         return {"type": "attack"} if targets else super().decide_action()
 
     def attack(self,env):
@@ -87,7 +87,7 @@ class SniperAgent(Agent):
 
 class GuardAgent(Agent):
     def __init__(self, x, y, radius=0.8, guard_x=None, guard_y=None):
-        super().__init__(x, y, radius=radius, range_radius=35, fov_deg=120)
+        super().__init__(x, y, radius=radius, range_radius=60, fov_deg=120)
         self.guard_position = np.array([guard_x or x, guard_y or y])
         self.patrol_radius = 25.0
         self.speed = 0.5
@@ -111,7 +111,7 @@ class GuardAgent(Agent):
 #a voir avec l'evolution par exemple le Decoy 
 class KamikazeAgent(Agent):
     def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=25, fov_deg=100)
+        super().__init__(x, y, radius=radius, range_radius=60, fov_deg=100)
         self.speed = 2.5
         self.explosion_range = 2.0
         self.explosion_damage = 100
@@ -143,7 +143,7 @@ class KamikazeAgent(Agent):
 
 class SupportAgent(Agent):
     def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=35, fov_deg=120)
+        super().__init__(x, y, radius=radius, range_radius=70, fov_deg=120)
         self.heal_range = 5.0
         self.heal_amount = 10
 
@@ -166,7 +166,7 @@ class SupportAgent(Agent):
 
 class HeavyAgent(Agent):
     def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=25, fov_deg=90)
+        super().__init__(x, y, radius=radius, range_radius=40, fov_deg=90)
         self.health = 200
         self.speed = 0.6
 

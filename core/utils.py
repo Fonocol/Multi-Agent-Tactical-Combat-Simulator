@@ -1,6 +1,6 @@
 import numpy as np
 from core.entity_types import EntityType
-MAX_DRONES = 50
+MAX_DRONES = 15
 MAX_DRONES_ELITE=3
 
 def distance_to(self, obj) -> float:

@@ -1,3 +1,4 @@
+import numpy as np
 from core.entity_types import EntityType, Role
 from .enemyBase import EnemyBase
 from core.utils import MAX_DRONES, distance_to
@@ -20,6 +21,9 @@ class EnemyDrone(EnemyBase):
         self.last_reproduction_time = 0
         self.reproduction_cooldown = 50  # ticks minimum entre deux repros
         self.health_cost = 20
+        
+        self.cooldown = 5
+        self.cooldown_timer = 0
         
         self.role = role.lower()
 
@@ -58,14 +62,18 @@ class EnemyDrone(EnemyBase):
             self.y += dy * self.speed * 2
         else:
             # Attack
-            
-            if self.role == Role.JammerComunication:
-                env.spawn_jammer_communication(self.x, self.y,moving=True,owner=self)
-            elif self.role == Role.SMOKER:
-                env.spawn_smoke_zone(self.x, self.y,moving=True, owner=self)
+            self.cooldown_timer +=1
+            if  self.cooldown_timer >= self.cooldown:
+                noisex,noisey = np.random.randint(-5,5),np.random.randint(-5,5)
+                if self.role == Role.JammerComunication:
+                    env.spawn_jammer_communication(self.x+noisex, self.y+noisey,moving=True,owner=self)
+                elif self.role == Role.SMOKER:
+                    env.spawn_smoke_zone(self.x+noisex, self.y+noisey,moving=True, owner=self)
+                    
+                else:
+                    env.spawn_projectile(self.x, self.y, dx, dy, self)
                 
-            else:   
-                env.spawn_projectile(self.x, self.y, dx, dy, self)
+                self.cooldown_timer =0
     
     
             

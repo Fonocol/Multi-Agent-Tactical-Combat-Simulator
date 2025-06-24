@@ -11,7 +11,7 @@ from core.objects.projectile import Projectile
 
 
 class Environment:
-    def __init__(self, width=100, height=100, use_rl=False):
+    def __init__(self, width=500, height=500, use_rl=False):
         self.width = width
         self.height = height
         self.use_rl=use_rl
@@ -44,15 +44,15 @@ class Environment:
         
    
     def spawn_jammer_communication(self, x, y,moving, owner=None):
-        jammer = JammerCommunication(x, y,radius=6.0,moving=moving,ttl=10)
+        jammer = JammerCommunication(x, y,radius=20.0,moving=moving,ttl=10)
         self.objects.append(jammer)
         
     def spawn_smoke_zone(self, x, y,moving, owner=None):
-        smoke = SmokeZone(x, y,radius=5.0,moving=moving,ttl=10)
+        smoke = SmokeZone(x, y,radius=20.0,moving=moving,ttl=10)
         self.objects.append(smoke)
         
     def spawn_jammer(self, x, y,moving, owner=None):
-        jammerZone = JammerZone(x, y,radius=5.0,moving=moving,ttl=10)
+        jammerZone = JammerZone(x, y,radius=20.0,moving=moving,ttl=10)
         self.objects.append(jammerZone)
         
     def spawn_entity(self,child):

@@ -109,7 +109,7 @@ class Agent(Entity):
 
         self.x, self.y = new_pos
 
-        if not (-1 <= self.x <= 102) or not  (-1 <= self.y <= 102):
+        if not (-1 <= self.x <=502) or not  (-1 <= self.y <= 502):
             self.delay_timer +=1
             self.zone_interdit = True
             if self.delay_timer > self.delay:

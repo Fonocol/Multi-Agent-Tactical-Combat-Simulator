@@ -2,7 +2,7 @@ class SimulationViewer {
     constructor() {
         this.canvas = document.getElementById('simCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.scale = 5;
+        this.scale = 1;
         this.frames = [];
         this.frameIndex = 0;
         this.isPlaying = true;
@@ -94,7 +94,7 @@ class SimulationViewer {
         const size = Math.min(container.clientWidth, container.clientHeight) - 40;
         this.canvas.width = size;
         this.canvas.height = size;
-        this.scale = size / 100 * this.zoomLevel;
+        this.scale = size / 500 * this.zoomLevel;
     }
 
     initEventListeners() {
@@ -261,10 +261,10 @@ class SimulationViewer {
         this.zoomLevel = Math.max(0.5, Math.min(5, newZoom));
 
         // Adjust pan offset to zoom at mouse position
-        this.panOffset.x = (mouseX / (this.canvas.width / 100)) / this.zoomLevel - simX;
-        this.panOffset.y = (mouseY / (this.canvas.height / 100)) / this.zoomLevel - simY;
+        this.panOffset.x = (mouseX / (this.canvas.width / 500)) / this.zoomLevel - simX;
+        this.panOffset.y = (mouseY / (this.canvas.height / 500)) / this.zoomLevel - simY;
 
-        this.scale = (this.canvas.width / 100) * this.zoomLevel;
+        this.scale = (this.canvas.width / 500) * this.zoomLevel;
         this.draw();
     }
 
@@ -275,17 +275,17 @@ class SimulationViewer {
         // Adjust grid based on zoom level
         const effectiveSpacing = spacing * Math.max(1, Math.floor(1 / this.zoomLevel));
 
-        for (let x = 0; x <= 100; x += effectiveSpacing) {
+        for (let x = 0; x <= 500; x += effectiveSpacing) {
             this.ctx.beginPath();
             this.ctx.moveTo((x + this.panOffset.x) * this.scale, 0);
-            this.ctx.lineTo((x + this.panOffset.x) * this.scale, 100 * this.scale);
+            this.ctx.lineTo((x + this.panOffset.x) * this.scale, 500 * this.scale);
             this.ctx.stroke();
         }
 
-        for (let y = 0; y <= 100; y += effectiveSpacing) {
+        for (let y = 0; y <= 500; y += effectiveSpacing) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, (y + this.panOffset.y) * this.scale);
-            this.ctx.lineTo(100 * this.scale, (y + this.panOffset.y) * this.scale);
+            this.ctx.lineTo(500 * this.scale, (y + this.panOffset.y) * this.scale);
             this.ctx.stroke();
         }
 
@@ -295,14 +295,14 @@ class SimulationViewer {
 
         // X axis
         this.ctx.beginPath();
-        this.ctx.moveTo((0 + this.panOffset.x) * this.scale, (50 + this.panOffset.y) * this.scale);
-        this.ctx.lineTo((100 + this.panOffset.x) * this.scale, (50 + this.panOffset.y) * this.scale);
+        this.ctx.moveTo((0 + this.panOffset.x) * this.scale, (250 + this.panOffset.y) * this.scale);
+        this.ctx.lineTo((500 + this.panOffset.x) * this.scale, (250 + this.panOffset.y) * this.scale);
         this.ctx.stroke();
 
         // Y axis
         this.ctx.beginPath();
-        this.ctx.moveTo((50 + this.panOffset.x) * this.scale, (0 + this.panOffset.y) * this.scale);
-        this.ctx.lineTo((50 + this.panOffset.x) * this.scale, (100 + this.panOffset.y) * this.scale);
+        this.ctx.moveTo((250 + this.panOffset.x) * this.scale, (0 + this.panOffset.y) * this.scale);
+        this.ctx.lineTo((250 + this.panOffset.x) * this.scale, (500 + this.panOffset.y) * this.scale);
         this.ctx.stroke();
     }
 
