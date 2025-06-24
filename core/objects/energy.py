@@ -11,8 +11,11 @@ class EnergySource(Entity):
     def update(self, env):
         for agent in env.agents:
             if agent.alive and distance_to(self, agent) <= self.radius:
-                agent.energy += self.energy
-                self.alive = False
+                if self.energy >=2:
+                    agent.energy = min(agent.energy + 2, 100)
+                    self.energy -=2
+                else:
+                    self.alive = False
                 break
             
     def to_dict(self) -> Dict[str, Any]:

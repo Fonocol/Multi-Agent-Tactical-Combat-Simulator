@@ -56,7 +56,7 @@ def train_dqn():
     from core.rl.env_wrapper import ShooterEnvWrapper
     from core.environment import Environment
 
-    trainer = DQNTrainer(state_dim=20*5+6, action_dim=13)
+    trainer = DQNTrainer(state_dim=20*5+7, action_dim=13)
     episodes_to_export = 20  # Épisodes à exporter
     
     # Liste des épisodes disponibles pour l'interface
@@ -65,17 +65,19 @@ def train_dqn():
     for episode in range(500):
         env = Environment(use_rl=True)
         wrapper = ShooterEnvWrapper(env, env.agents[0])
-        state = wrapper.reset()
+        flat_state,minimap = wrapper.reset()
 
-        for _ in range(10000):
+        for _ in range(1000):
             
-            action = trainer.select_action(state)
-            next_state, reward, done = wrapper.step(action)
-            trainer.replay_buffer.push(state, action, reward, next_state, done)
+            action = trainer.select_action(flat_state,minimap)
+            next_state, next_minimap, reward, done = wrapper.step(action)
+            trainer.replay_buffer.push(flat_state, minimap,action, reward, next_state,next_minimap, done)
             trainer.train_step()
-            state = next_state
+            flat_state = next_state
+            minimap= next_minimap
             if done:
                 break
+            
             
         print(f"✅ Episode {episode + 1} done")
         # Sauvegarde les épisodes intéressants

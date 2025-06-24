@@ -4,7 +4,7 @@ from core.entity_types import EntityType
 
 class ScoutAgent(Agent):
     def __init__(self, x, y, radius=0.8):
-        super().__init__(x, y, radius=radius, range_radius=45, fov_deg=120)
+        super().__init__(x, y, radius=radius, range_radius=35, fov_deg=120)
         self.speed = 2.0
 
     def decide_action(self, observation=None):
@@ -54,7 +54,9 @@ class ScoutAgent(Agent):
         elif action_type == "attack":
             #visible = self.get_vision(env.objects)
             #self.attack(visible)
-            self.attack(env)
+            if self.energy >= 10:
+                self.energy -= 10
+                self.attack(env)
 
         else:
             # Action inconnue : l'ignorer ou raise une erreur

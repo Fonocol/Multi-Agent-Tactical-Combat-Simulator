@@ -309,7 +309,7 @@ class SimulationViewer {
     drawEntity(entity, color) {
         const x = (entity.x + this.panOffset.x) * this.scale;
         const y = (entity.y + this.panOffset.y) * this.scale;
-        const radius = (entity.radius || 1) * this.scale / 2;
+        const radius = (entity.radius || 1) * this.scale / 1.0;
 
         // Draw trajectory if selected
         if (this.selectedAgent && entity.id === this.selectedAgent.id && this.trajectories.has(entity.id)) {

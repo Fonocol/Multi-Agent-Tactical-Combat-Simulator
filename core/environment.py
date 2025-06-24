@@ -104,7 +104,7 @@ class Environment:
             agent.perform_action(action, self)
             visible = self.objects
            
-
+           
             step_info.append({
                 'agent': agent.to_dict(),
                 'facing': agent.get_orientation(),

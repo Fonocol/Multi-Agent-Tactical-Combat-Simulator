@@ -14,6 +14,7 @@ class EntityType:
     JammerComunication = 'jammer_comunication'
     DECOY='decoy'
     ENERGY_DRONE_ELITE='enemy_drone_elite'
+    ENEMY_TURREL='enemy_turret'
     
 
     @classmethod

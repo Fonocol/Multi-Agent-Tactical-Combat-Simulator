@@ -1,9 +1,11 @@
 # core/rl/env_wrapper.py
+import os
 import numpy as np
 from core.agents.agent import Agent
 from core.enemys.enemyKamikaze import EnemyKamikaze
 from core.entity_types import EntityType
 from core.environment import Environment
+from core.mini_map import extract_minimap_tensor
 from core.objects.energy import EnergySource
 from core.objects.explosion import Explosion
 from core.objects.quest_item import ObjectiveItem
@@ -21,55 +23,7 @@ class ShooterEnvWrapper:
         self.agent = self.env.agents[0]  # à adapter si plusieurs agents
         return self.get_state()
 
-    def get_state0(self):
-        enemies = [o for o in self.env.objects if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE]]
-        visible = self.agent.get_vision(enemies)
-
-        center = np.array([self.env.width / 2, self.env.height / 2])
-        agent_pos = np.array([self.agent.x, self.agent.y])
-        dist_center = np.linalg.norm(agent_pos - center) / max(self.env.width, self.env.height)
-
-        n_visible = len(visible)
-        closest_enemy_dist = min(
-            (distance_to(self.agent, e) for e in visible), default=self.env.width
-        ) / max(self.env.width, self.env.height)
-
-        in_danger_zone = any(
-            isinstance(o, (JammerZone, SmokeZone, Explosion)) and distance_to(self.agent, o) < o.radius
-            for o in self.env.objects
-        )
-
-        len_inbox = len(self.agent.inbox) / 10  # Normalisé
-
-        near_objective = any(
-            isinstance(o, ObjectiveItem) and distance_to(self.agent, o) < 5.0
-            for o in self.env.objects
-        )
-
-        near_energy = any(
-            isinstance(o, EnergySource) and distance_to(self.agent, o) < 5.0
-            for o in self.env.objects
-        )
-
-        n_visible_kamikaze = sum(
-            1 for e in visible if isinstance(e, EnemyKamikaze)
-        ) / 5.0  # Normalisé
-
-        return np.array([
-            self.agent.x / self.env.width,
-            self.agent.y / self.env.height,
-            self.agent.energy / 100,
-            self.agent.health / 100,
-            float(n_visible > 0),
-            dist_center,
-            float(in_danger_zone),
-            len_inbox,
-            closest_enemy_dist,
-            n_visible_kamikaze,
-            float(near_objective),
-            float(near_energy)
-        ])
-        
+    
     def get_state(self, max_objects=5):
         type_to_index = {
             EntityType.ENERGY_DRONE: 0,
@@ -126,10 +80,13 @@ class ShooterEnvWrapper:
             self.agent.energy / 100.0,
             self.agent.health / 100.0,
             len(self.agent.inbox) / 10.0,
-            float(self.agent.alive)
+            float(self.agent.alive),
+            float(self.agent.zone_interdit)
         ]
-
-        return np.array(agent_info + object_features, dtype=np.float32)
+        flat_state = np.array(agent_info + object_features, dtype=np.float32)
+        minimap_tensor = extract_minimap_tensor(self.agent, self.env,grid_size=64)  # (C, H, W)
+        
+        return flat_state, minimap_tensor
 
     
     def step(self, action_idx):
@@ -138,23 +95,33 @@ class ShooterEnvWrapper:
 
         self.env.step()
 
-        next_state = self.get_state()
+        # next_state = self.get_state()
+        next_flat, next_minimap = self.get_state()
 
         # === Récompense ===
         reward = 0.0
+        if action['type'] == "attack":
+            if self.agent.energy <= 10:
+                reward = -0.2
 
         if getattr(self.agent, "last_attack_success", False):
-            reward += 0.5
+            reward += 0.1
             self.agent.last_attack_success = False
 
         if self.agent.alive:
             reward += 0.05  # Survie
 
             # Repérage d’ennemis
-            enemies = [o for o in self.env.objects if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE]]
+            enemies = [o for o in self.env.objects if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE,EntityType.TARGET,EntityType.ENEMY_TURREL]]
             visible = self.agent.get_vision(enemies)
             if visible:
                 reward += 0.5
+            
+            for o in visible:
+                if o.etype in [EntityType.ENERGY_DRONE, EntityType.ENERGY_KAMIKAZE,EntityType.ENEMY_TURREL]:
+                    dist = distance_to(self.agent, o)
+                    if dist > 15:
+                        reward += 0.2
 
             # Exploration (centré sur la map)
             dist = np.linalg.norm(np.array([self.agent.x, self.agent.y]) - np.array([self.env.width/2, self.env.height/2]))
@@ -170,23 +137,24 @@ class ShooterEnvWrapper:
 
             # Énergie proche
             near_energy = any(
-                isinstance(o, EnergySource) and distance_to(self.agent, o) < 5.0
+                isinstance(o, EnergySource) and distance_to(self.agent, o) < o.radius+0.5
                 for o in self.env.objects
             )
-            if near_energy and self.agent.energy < 100:
-                reward += 0.5
+            if near_energy :#and self.agent.energy < 100:
+                reward += 0.05
 
             # Longévité
             if hasattr(self.agent, "time_alive") and self.agent.time_alive > 300:
-                reward += 1.0
+                reward += 0.3
 
             # Pénalité d'inaction (facultatif)
             if self.agent.energy > 90 and len(visible) == 0:
-                reward -= 0.2
+                reward -= 0.4
 
         else:
-            reward -= 1.0  # Mort
-
-
+            reward -= 1.5  # Mort
+        if self.agent.zone_interdit:
+            reward -= 0.4
+            
         done = not self.agent.alive
-        return next_state, reward, done
+        return next_flat, next_minimap, reward, done

@@ -60,3 +60,4 @@ class Projectile(Entity):
                     self.alive = False
                     return
 
+

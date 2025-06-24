@@ -24,6 +24,10 @@ class Agent(Entity):
         self.time_alive = 0
 
         self.last_attack_success = False
+        
+        self.zone_interdit = False
+        self.delay_timer = 0
+        self.delay = 15
 
     def decide_action(self, observation=None):
         """
@@ -52,7 +56,9 @@ class Agent(Entity):
         elif action["type"] == "attack":
             #visible = self.get_vision(env.objects)
             #self.attack(visible,env)
-            self.attack(env)
+            if self.energy >= 5:
+                self.energy -= 5
+                self.attack(env)
             
         self.update()
 
@@ -83,6 +89,7 @@ class Agent(Entity):
     
     def move(self, dx, dy, env=None):
         new_pos = np.array([self.x + dx, self.y + dy])
+        self.zone_interdit = False
 
         if env:
             for obj in env.objects:
@@ -90,12 +97,27 @@ class Agent(Entity):
                     dist = np.linalg.norm([obj.x - new_pos[0], obj.y - new_pos[1]])
                     if dist <= self.radius + obj.radius + 0.5:
                         return
+            
+            for obj in env.objects:
+                if obj.etype in [EntityType.ENERGY_KAMIKAZE]:
+                    dist = np.linalg.norm([obj.x - new_pos[0], obj.y - new_pos[1]])
+                    if dist <= self.radius + obj.explosion_radius:
+                         self.zone_interdit = True
+                            
+                    
+            
 
         self.x, self.y = new_pos
 
-        if not (0 <= self.x <= 500 and 0 <= self.y <= 500):
-            self.health = 0
-            self.alive = False
+        if not (-1 <= self.x <= 102) or not  (-1 <= self.y <= 102):
+            self.delay_timer +=1
+            self.zone_interdit = True
+            if self.delay_timer > self.delay:
+                self.health = 0
+                self.alive = False
+        else:
+            self.delay_timer = 0
+            
 
     
         
@@ -242,6 +264,6 @@ class Agent(Entity):
                 self.cloaked = False
         
         if self.time_alive <305:        
-            self.time_alive +=0.1
+            self.time_alive +=1
 
 
